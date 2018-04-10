@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1e33efca-38e0-4af4-be80-8ead8275a685" name="Montserrat_local" url="http://matagalls.local">
+        <fileTransfer host="matagalls.local" port="22" rootFolder="/home/lasalle/rangarok" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="24b8c50f-0924-46ab-87c9-261213220d39" name="montserrat_uni" url="http://montserrat.salleurl.edu">
+        <fileTransfer host="montserrat.salleurl.edu" port="22" rootFolder="/users/home/alumnes/ls30759/" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
