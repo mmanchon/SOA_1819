@@ -1,11 +1,25 @@
-//
-// Created by samuel on 10/04/2018.
-//
+/**
+ *
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "FileUtilities.h"
 
 void main(int argc, char **argv){
-    if(!argc){
-        //ERROR
+    int fd = 0;
+
+    if(!argc || argc > 3){
+        printf("Error\n");
     } else{
-        printf("Hello World\n");
+
+        if (memcmp(argv[1], "-info", sizeof(char) * strlen(argv[1])) == 0){
+            fd = exisitsFile(argv[2]);
+            detectFileSystemType(fd);
+        }else{
+            printf("Error\n");
+        }
     }
 }
