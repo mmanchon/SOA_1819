@@ -19,19 +19,19 @@ int exisitsFile(char *path){
 
 int detectFileSystemType(int fd){
     int ok;
-    char buffer;
-
-    ok = lseek(fd,OFFSET_SUPERBLOCK+OFFSET_MAGICNUMBER,SEEK_SET);
-
+    //char buffer[2];
+    //long buffer = 0;
+    uint16_t buffer;
+    ok = lseek(fd,PADDING_EXT4 + OFFSET_MAGICNUMBER,SEEK_SET);
     if (ok < 0){
         printf("ERROR\n");
         return 0;
     }else{
-        if(read(fd, &buffer, sizeof(char)) <= 0){
+        if(read(fd, &buffer, sizeof(uint16_t)) <= 0){
             printf("ERROR\n");
             return 0;
         }else{
-            printf("BUFFER: %c\n",buffer);
+            printf("BUFFER: %X\n",buffer);
             return 1;
         }
     }

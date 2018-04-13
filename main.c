@@ -8,7 +8,7 @@
 #include <string.h>
 #include "FileUtilities.h"
 
-void main(int argc, char **argv){
+int main(int argc, char **argv){
     int fd = 0;
 
     if(!argc || argc > 3){
@@ -22,4 +22,6 @@ void main(int argc, char **argv){
             printf("Error\n");
         }
     }
+
+    return 0;
 }

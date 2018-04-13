@@ -7,10 +7,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <linux/kernel.h>
 
-#define OFFSET_SUPERBLOCK 1024
+#define PADDING_EXT4 1024
 #define OFFSET_MAGICNUMBER 56
 
 #ifndef RAGNAROK_FILEUTILITIES_H
