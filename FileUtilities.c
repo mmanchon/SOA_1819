@@ -19,6 +19,7 @@ int exisitsFile(char *path){
 
 int detectFileSystemType(int fd){
     int ok;
+    FileSystem fileSystem;
     //char buffer[2];
     //long buffer = 0;
     uint16_t buffer;
@@ -31,7 +32,11 @@ int detectFileSystemType(int fd){
             printf("ERROR\n");
             return 0;
         }else{
-            printf("BUFFER: %X\n",buffer);
+            printf("BUFFER: %X\n\n",buffer);
+            if(buffer == MAGIC_NUMBER_EXT4){
+                printf("Estamos leyendo un FS ext4\n");
+                fileSystem = initSearchInfoExt4(fd);
+            }
             return 1;
         }
     }
