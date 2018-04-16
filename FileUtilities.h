@@ -19,7 +19,7 @@
 //includes propios
 #include "types.h"
 #include "Ext4.h"
-
+#include "Fat32.h"
 
 int exisitsFile(char *path);
 

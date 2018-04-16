@@ -36,8 +36,7 @@ void showInfoExt4(VolumenExt4 ext4){
 }
 
 
-FileSystem initSearchInfoExt4(){
-    FileSystem fileSystem;
+FileSystem initSearchInfoExt4(FileSystem fileSystem){
 
     moveThroughExt4(SEEK_SET,PADDING_EXT4,BYTES_4,1,&fileSystem.ext4.inodesCount);
     moveThroughExt4(SEEK_CUR,0,BYTES_4,1,&fileSystem.ext4.blockCount);

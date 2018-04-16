@@ -71,7 +71,7 @@ int fd;
  */
 void showInfoExt4(VolumenExt4 ext4);
 
-FileSystem initSearchInfoExt4();
+FileSystem initSearchInfoExt4(FileSystem fileSystem);
 
 void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 

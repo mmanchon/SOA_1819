@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <linux/kernel.h>
+#include <inttypes.h>
 //includes propios
 #include "types.h"
 
@@ -30,14 +31,22 @@
 #define SECTORS_FAT "Sectors per FAT: %d\n"
 #define LABEL "Label: %s\n"
 
+#define BYTES_1 1
+#define BYTES_2 2
+#define BYTES_8 8
+#define BYTES_11 11
+
+#define OFF_NAME_SYS 3
+#define NO_OFF 0
+#define OFF_LABEL 43
 int fd;
 
-void showInfoFat32(VolumenExt4 ext4);
+void showInfoFat32(VolumenFat32 fat32);
 
-FileSystem initSearchInfoFat32();
+FileSystem initSearchInfoFat32(FileSystem fileSystem);
 
-void moveThroughFat32(int whence,off_t offset,int bytes, int numArg, ...);
+void moveThroughFat32(int whence,off_t offset,int bytes, char *var);
 
-void checkIfFat32();
+void checkIfFat32(int file);
 
 #endif //RAGNAROK_FAT32_H

@@ -50,7 +50,14 @@ typedef struct {
 }VolumenExt4;
 
 typedef struct {
-
+    char systemName[10];
+    char sectorSize[32];
+    char sectorsPerCluster;
+    char reservedSectors[2];
+    char numberFat;
+    char numberEntries[2];
+    char sectorsPerFat[2];
+    char label[11];
 }VolumenFat32;
 
 typedef struct {
