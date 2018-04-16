@@ -44,6 +44,9 @@ typedef struct {
     uint32_t blockSize;
     uint32_t fragsGroup;
 
+    //Volume info
+    char volumeName[16];
+
 }VolumenExt4;
 
 typedef struct {

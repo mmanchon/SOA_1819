@@ -19,6 +19,7 @@
 #include <linux/kernel.h>
 #include <inttypes.h>
 #include <math.h>
+#include <stdarg.h>
 //includes propios
 #include "types.h"
 
@@ -37,7 +38,7 @@
  * BLOCK INFO
  * */
 #define BLOCK_INFO "BLOCK INFO\n"
-#define BLOCK_SIZE "Block Size: %f\n"
+#define BLOCK_SIZE "Block Size: %.2f\n"
 #define RESERVED_BLOCK "Reserved Blocks: %d\n"
 #define FREE_BLOCKS "Free Blocks: %d\n"
 #define TOTAL_BLOCKS "Total Blocks: %d\n"
@@ -53,20 +54,15 @@
 #define LAST_MOUNT_VOL "Last mount: %s\n"
 #define LAST_WRITTEN "Last written: %s\n"
 
-/**
- * FAT32 MESSAGES
- * */
-#define SYSTEM_NAME "System Name: %s\n"
-#define SECTOR_SIZE "Sector Size: %d\n"
-#define SECTOR_CLUSTER "Sectors per Cluster: %d\n"
-#define RESERVED_SECTORS "Reserved Sectors: %d\n"
-#define NUMBER_FATS "Number of FATs: %d\n"
-#define ROOT_ENTRIES "Maximum Root Entries: %d\n"
-#define SECTORS_FAT "Sectors per FAT: %d\n"
-#define LABEL "Label: %s\n"
 
-#define BITS_32 32
+
+#define BYTES_4 4
+#define BYTES_2 2
+#define BYTES_1 1
 #define OFF_FIRST_INODE 0x54
+#define OFF_VOLUME_NAME 0x78
+#define OFF_FEATURE_COMPAT 0x5C
+#define MAX_NUM_LIST 1
 int fd;
 
 /**
@@ -75,8 +71,9 @@ int fd;
  */
 void showInfoExt4(VolumenExt4 ext4);
 
-FileSystem initSearchInfoExt4(int file);
+FileSystem initSearchInfoExt4();
 
-void moveThroughExt4(int whence,off_t offset,uint32_t *field32, uint16_t *field16);
+void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
+void checkIfExt4(int file);
 #endif //RAGNAROK_EXT4_H
