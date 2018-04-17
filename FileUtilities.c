@@ -37,9 +37,11 @@ int detectFileSystemType(int fd) {
             printf("BUFFER: %X\n\n", buffer);
 
             if (buffer == MAGIC_NUMBER_EXT4) {
-                printf("Estamos leyendo un FS EXT\n");
-                checkIfExt4(fd);
-                fileSystem = initSearchInfoExt4(fileSystem);
+
+                ok = checkIfExt4(fd);
+
+                if(ok)fileSystem = initSearchInfoExt4(fileSystem);
+
             }else{
                 checkIfFat32(fd);
                 fileSystem = initSearchInfoFat32(fileSystem);

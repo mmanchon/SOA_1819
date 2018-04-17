@@ -31,8 +31,11 @@
 #define SECTORS_FAT "Sectors per FAT: %d\n"
 #define LABEL "Label: %s\n"
 
+#define OFF_SECTOR_PER_FAT 0x16
+
 #define BYTES_1 1
 #define BYTES_2 2
+#define BYTES_4 4
 #define BYTES_8 8
 #define BYTES_11 11
 
@@ -45,7 +48,7 @@ void showInfoFat32(VolumenFat32 fat32);
 
 FileSystem initSearchInfoFat32(FileSystem fileSystem);
 
-void moveThroughFat32(int whence,off_t offset,int bytes, char *var);
+void moveThroughFat32(int whence,off_t offset,int bytes,int numArg, ...);
 
 void checkIfFat32(int file);
 

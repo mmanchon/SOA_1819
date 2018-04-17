@@ -47,16 +47,19 @@ typedef struct {
     //Volume info
     char volumeName[16];
 
+    uint32_t feature_compat;
+    uint32_t feature_incompat;
+
 }VolumenExt4;
 
 typedef struct {
-    char systemName[10];
-    char sectorSize[32];
+    char systemName[8];
+    uint16_t sectorSize[32];
     char sectorsPerCluster;
-    char reservedSectors[2];
+    uint16_t reservedSectors[2];
     char numberFat;
-    char numberEntries[2];
-    char sectorsPerFat[2];
+    uint16_t numberEntries[2];
+    uint16_t sectorsPerFat[2];
     char label[11];
 }VolumenFat32;
 

@@ -29,6 +29,7 @@ void showInfoExt4(VolumenExt4 ext4){
     printf(FRAGS_GROUP,ext4.fragsGroup);
     printf(VOLUME_INFO);
     printf(VOLUME_NAME,ext4.volumeName);
+
     /*printf();
     printf();
     printf();
@@ -50,7 +51,8 @@ FileSystem initSearchInfoExt4(FileSystem fileSystem){
     moveThroughExt4(SEEK_CUR,0,BYTES_4,1,&fileSystem.ext4.inodesGroup);
     moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_FIRST_INODE,BYTES_2,1,&fileSystem.ext4.firstInode);
     moveThroughExt4(SEEK_CUR,0,BYTES_4,1,&fileSystem.ext4.inodeSize);
-    moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_VOLUME_NAME,BYTES_2,1,&fileSystem.ext4.volumeName);
+    moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_VOLUME_NAME,BYTES_4,1,&fileSystem.ext4.volumeName);
+
     showInfoExt4(fileSystem.ext4);
 
     return fileSystem;
@@ -93,13 +95,21 @@ void moveThroughExt4(int whence,off_t offset,int bytes,int numArg, ...){
     va_end(valist);
 }
 
-void checkIfExt4(int file){
+int checkIfExt4(int file){
     fd = file;
-    uint32_t aux;
-    //https://unix.stackexchange.com/questions/123009/reliable-way-to-detect-ext2-or-ext3-or-ext4
-    moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_FEATURE_COMPAT,BYTES_4,1,&aux);
-    printf("EL CHEQUEO DA %"PRIu32 "\n\n",aux);
-    moveThroughExt4(SEEK_CUR,0,BYTES_4,1,&aux);
-    printf("EL CHEQUEO2 DA %"PRIu32 "\n\n",aux);
 
+    uint32_t feature_compat;
+    uint32_t feature_incompat;
+    int has_extent,has_journal;
+
+    moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_FEATURE_COMPAT,BYTES_4,1,&feature_compat);
+    moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_FEATURE_INCOMPAT,BYTES_4,1,&feature_incompat);
+
+    has_extent = feature_incompat& 0x40;
+    has_journal = feature_compat & 0x4;
+
+    if(!has_extent && has_journal){ printf(NOT_RECOGNIZED,"EXT3"); return 0;
+    }else if(has_extent>0 && has_journal){ return 1;
+    }else if(!has_extent && !has_journal)  printf(NOT_RECOGNIZED,"EXT2");
+    return 0;
 }

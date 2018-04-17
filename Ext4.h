@@ -55,6 +55,10 @@
 #define LAST_WRITTEN "Last written: %s\n"
 
 
+/**
+ * TESTING INFO
+ */
+#define HAS_JOURNAL "Has journal %d\n"
 
 #define BYTES_4 4
 #define BYTES_2 2
@@ -62,6 +66,7 @@
 #define OFF_FIRST_INODE 0x54
 #define OFF_VOLUME_NAME 0x78
 #define OFF_FEATURE_COMPAT 0x5C
+#define OFF_FEATURE_INCOMPAT 0x60
 #define MAX_NUM_LIST 1
 int fd;
 
@@ -75,5 +80,5 @@ FileSystem initSearchInfoExt4(FileSystem fileSystem);
 
 void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
-void checkIfExt4(int file);
+int checkIfExt4(int file);
 #endif //RAGNAROK_EXT4_H

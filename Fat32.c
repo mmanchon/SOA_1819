@@ -24,35 +24,55 @@ void showInfoFat32(VolumenFat32 fat32){
 
 FileSystem initSearchInfoFat32(FileSystem fileSystem){
     moveThroughFat32(SEEK_SET,OFF_NAME_SYS,8,fileSystem.fat32.systemName);
-    uint32_t aux;
-    read(fd,&aux, sizeof(uint32_t));
-    printf("Esto es una prueba %"PRIu32"\n",aux);
-    moveThroughFat32(SEEK_SET,0x0B,32,fileSystem.fat32.sectorSize);
-    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_1,&fileSystem.fat32.sectorsPerCluster);
-    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_2,fileSystem.fat32.reservedSectors);
-    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_1,&fileSystem.fat32.numberFat);
-    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_2,fileSystem.fat32.numberEntries);
-    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_2,fileSystem.fat32.sectorsPerFat);
-    moveThroughFat32(SEEK_SET,OFF_LABEL,BYTES_11,fileSystem.fat32.label);
+
+    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_2,1,&fileSystem.fat32.sectorSize);
+    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_1,1,&fileSystem.fat32.sectorsPerCluster);
+    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_2,1,&fileSystem.fat32.reservedSectors);
+    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_1,1,&fileSystem.fat32.numberFat);
+    moveThroughFat32(SEEK_CUR,NO_OFF,BYTES_2,1,&fileSystem.fat32.numberEntries);
+
+    moveThroughFat32(SEEK_SET,OFF_SECTOR_PER_FAT,BYTES_2,1,&fileSystem.fat32.sectorsPerFat);
+    moveThroughFat32(SEEK_SET,OFF_LABEL,BYTES_1,1,fileSystem.fat32.label);
 
     showInfoFat32(fileSystem.fat32);
 
     return fileSystem;
 }
-
-void moveThroughFat32(int whence,off_t offset,int bytes, char *var){
+void moveThroughFat32(int whence,off_t offset,int bytes,int numArg, ...){
+    //Creamos una lista para los argumentos no definidos '...'
+    va_list valist;
+    //Constante MAX_NUM_LIST se encuentra en EXT4.h
+    //Inicializamos la lista a 1 posicion
+    va_start(valist,numArg);
 
     //Comprovamos que nos hemos podido desplazar el offset correspondiente
     if(lseek(fd,offset,whence) != -1) {
         //Segun la variable bytes leeremos un tipo de variables o otro
-        if(read(fd,var, sizeof(char)*bytes) <= 0){
-            printf("Error. La lectura de %d bytes no ha sido posible\n",bytes);
-            exit(1);
+        if(bytes == BYTES_4){
+            uint32_t *aux = va_arg(valist, uint32_t *);
+            if(read(fd,aux, sizeof(uint32_t)) <= 0){
+                printf("Erro. La lectura de 32byte na ha sido posible\n");
+                exit(1);
+            }
+        }else if(bytes == BYTES_2){
+            uint16_t *aux = va_arg(valist, uint16_t *);
+            if(read(fd,aux, sizeof(uint16_t)) <= 0){
+                printf("Erro. La lectura de 16byte na ha sido posible\n");
+                exit(1);
+            }
+        }else if(bytes == BYTES_1){
+            char *aux = va_arg(valist, char *);
+            if(read(fd,aux, sizeof(char)) <= 0){
+                printf("Erro. La lectura de 8byte na ha sido posible\n");
+                exit(1);
+            }
         }
     }else{
         printf("Error. El lseek no ha funcionado\n");
         exit(1);
     }
+
+    va_end(valist);
 }
 
 void checkIfFat32(int file){
