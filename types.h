@@ -27,6 +27,17 @@
 #define NOT_RECOGNIZED "File System not recognized (%s)\n"
 
 
+#define BYTES_1 1
+#define BYTES_2 2
+#define BYTES_4 4
+#define BYTES_8 8
+#define BYTES_11 11
+#define BYTES_16 16
+#define MAX_NUM_LIST 1
+
+
+#define NO_OFF 0
+
 typedef struct {
     //Inodes Info
     uint32_t inodesCount;
@@ -46,20 +57,20 @@ typedef struct {
 
     //Volume info
     char volumeName[16];
-
-    uint32_t feature_compat;
-    uint32_t feature_incompat;
+    uint32_t lastCheck;
+    uint32_t lastMounted;
+    uint32_t lastWritten;
 
 }VolumenExt4;
 
 typedef struct {
     char systemName[8];
-    uint16_t sectorSize[32];
-    char sectorsPerCluster;
-    uint16_t reservedSectors[2];
-    char numberFat;
-    uint16_t numberEntries[2];
-    uint16_t sectorsPerFat[2];
+    uint16_t sectorSize;
+    uint8_t sectorsPerCluster;
+    uint16_t reservedSectors;
+    uint8_t numberFat;
+    uint16_t numberEntries;
+    uint32_t sectorsPerFat;
     char label[11];
 }VolumenFat32;
 

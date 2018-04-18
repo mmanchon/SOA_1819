@@ -16,10 +16,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <linux/kernel.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdarg.h>
+#include <time.h>
 //includes propios
 #include "types.h"
 
@@ -50,9 +50,9 @@
  * */
 #define VOLUME_INFO "VOLUME INFO\n"
 #define VOLUME_NAME "Volume name: %s\n"
-#define LAST_CHECK_VOL "Last check: %s\n"
-#define LAST_MOUNT_VOL "Last mount: %s\n"
-#define LAST_WRITTEN "Last written: %s\n"
+#define LAST_CHECK_VOL "Last check: %s"
+#define LAST_MOUNT_VOL "Last mount: %s"
+#define LAST_WRITTEN "Last written: %s"
 
 
 /**
@@ -60,14 +60,13 @@
  */
 #define HAS_JOURNAL "Has journal %d\n"
 
-#define BYTES_4 4
-#define BYTES_2 2
-#define BYTES_1 1
 #define OFF_FIRST_INODE 0x54
 #define OFF_VOLUME_NAME 0x78
 #define OFF_FEATURE_COMPAT 0x5C
 #define OFF_FEATURE_INCOMPAT 0x60
-#define MAX_NUM_LIST 1
+#define OFF_LAST_CHECK 0x40
+#define OFF_LAST_MOUNT 0x2C
+
 int fd;
 
 /**

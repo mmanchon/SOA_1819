@@ -34,7 +34,7 @@ int detectFileSystemType(int fd) {
 
         } else {
 
-            printf("BUFFER: %X\n\n", buffer);
+          //  printf("BUFFER: %X\n\n", buffer);
 
             if (buffer == MAGIC_NUMBER_EXT4) {
 
@@ -43,15 +43,9 @@ int detectFileSystemType(int fd) {
                 if(ok)fileSystem = initSearchInfoExt4(fileSystem);
 
             }else{
-                checkIfFat32(fd);
-                fileSystem = initSearchInfoFat32(fileSystem);
-                /*if(lseek(fd,3,SEEK_SET) < 0) {
-                    printf("ERROR\n");
-                }else{
-                    char aux[8];
-                    read(fd,aux, sizeof(char)*8);
-                    printf("BUFFFEEEERR: %s\n",aux);
-                }*/
+                ok = checkIfFat32(fd);
+                if(ok == 1)fileSystem = initSearchInfoFat32(fileSystem);
+                if(ok == 2)printf(NOT_FOUND);
             }
             return 1;
         }
