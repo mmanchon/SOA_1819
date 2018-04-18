@@ -19,7 +19,6 @@ void showInfoFat32(VolumenFat32 fat32) {
     printf(ROOT_ENTRIES, (fat32.numberEntries));
     printf(SECTORS_FAT, (fat32.sectorsPerFat));
     printf(LABEL, fat32.label);
-
 }
 
 FileSystem initSearchInfoFat32(FileSystem fileSystem) {
@@ -98,12 +97,12 @@ int checkIfFat32(int file) {
     if (strcmp(aux, "FAT32   ") == 0) { return 1; }
     else if (strcmp(aux, "FAT12   ") == 0){
         printf(NOT_RECOGNIZED,"FAT12");
-        return 3;
+        return 0;
     } else if(strcmp(aux, "FAT16   ") == 0) {
         printf(NOT_RECOGNIZED,"FAT16");
-        return 3;
+        return 0;
     }else{
-        return 2;
+        return -1;
 
     }
 

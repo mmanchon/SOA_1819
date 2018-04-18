@@ -19,7 +19,7 @@ int exisitsFile(char *path) {
 
 int detectFileSystemType(int fd) {
     int ok;
-    FileSystem fileSystem;
+
     uint16_t buffer;
     ok = lseek(fd, PADDING_EXT4 + OFFSET_MAGICNUMBER, SEEK_SET);
 
@@ -34,20 +34,15 @@ int detectFileSystemType(int fd) {
 
         } else {
 
-          //  printf("BUFFER: %X\n\n", buffer);
-
             if (buffer == MAGIC_NUMBER_EXT4) {
-
                 ok = checkIfExt4(fd);
-
-                if(ok)fileSystem = initSearchInfoExt4(fileSystem);
-
-            }else{
-                ok = checkIfFat32(fd);
-                if(ok == 1)fileSystem = initSearchInfoFat32(fileSystem);
-                if(ok == 2)printf(NOT_FOUND);
+                return ok;
+            }else if(ok =checkIfFat32(fd)) {
+                return 2;
+            }else if(ok<0){
+                printf(NOT_FOUND);
             }
-            return 1;
+            return 0;
         }
     }
 

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="1e33efca-38e0-4af4-be80-8ead8275a685" name="Montserrat_local" url="http://192.168.254.128">
-        <fileTransfer host="192.168.254.128" port="22" rootFolder="/home/lasalle/Ragnarok" accessType="SFTP">
+      <webServer id="1e33efca-38e0-4af4-be80-8ead8275a685" name="Montserrat_local" url="http://matagalls.local">
+        <fileTransfer host="matagalls.local" port="22" rootFolder="/home/lasalle/Ragnarok" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>
