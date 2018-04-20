@@ -66,6 +66,8 @@
 #define OFF_FEATURE_INCOMPAT 0x60
 #define OFF_LAST_CHECK 0x40
 #define OFF_LAST_MOUNT 0x2C
+#define OFF_BLOCKGROUP_SIZE 0xFE
+#define PADDING_BLOCKGROUP_DESCRIPTORS 2048
 
 int fd;
 
@@ -80,4 +82,6 @@ FileSystem initSearchInfoExt4(FileSystem fileSystem);
 void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
 int checkIfExt4(int file);
+
+void searchFileExt4();
 #endif //RAGNAROK_EXT4_H

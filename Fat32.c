@@ -93,16 +93,18 @@ int checkIfFat32(int file) {
     fd = file;
     char aux[8];
     moveThroughFat32(SEEK_SET, OFF_FAT_TYPE, BYTES_8, 1, aux);
-    printf("BUFFER: -%s-\n", aux);
-    if (strcmp(aux, "FAT32   ") == 0) { return 1; }
-    else if (strcmp(aux, "FAT12   ") == 0){
+    //printf("BUFFER: -%s-\n", aux);
+    if (strcmp(aux, "FAT32   ") == 0) {
+        return 1;
+    } else if (strcmp(aux, "FAT12   ") == 0){
         printf(NOT_RECOGNIZED,"FAT12");
-        return 0;
+        exit(1);
     } else if(strcmp(aux, "FAT16   ") == 0) {
         printf(NOT_RECOGNIZED,"FAT16");
+        exit(1);
+    } else{
+        printf(NOT_FOUND);
         return 0;
-    }else{
-        return -1;
 
     }
 
