@@ -140,18 +140,60 @@ int checkIfExt4(int file) {
     return 0;
 }
 
+
 void searchFileExt4() {
     uint16_t blockGroupSize;
     uint32_t upperInodeBitmap;
     uint32_t lowerInodeBitmap;
-    uint64_
+    uint64_t inodeBitmap;
+    uint32_t lowerInodeTable;
+    uint32_t upperInodeTable;
+    uint64_t inodeTable;
+    uint32_t feature_compat;
+    uint16_t reservedGdtBlocks;
+    uint32_t blockSize;
+
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_FEATURE_COMPAT, BYTES_4, 1, &feature_compat);
+    feature_compat = feature_compat & 0x10;
+    printf("FEATURE COMPAT HAS GDT BLOCKS -%"PRIu32"-\n", feature_compat);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 +0xCE, BYTES_2, 1, &reservedGdtBlocks);
+    printf("RESERVED GDT BLOCKS -%"PRIu16"-\n", reservedGdtBlocks);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4+0x18, BYTES_4, MAX_NUM_LIST, &blockSize);
+    size = pow(2, (10 + blockSize));
+
     //leemos el tamaño del block group descriptors indicado en el superblock con offset de 0xFE
     moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_BLOCKGROUP_SIZE,BYTES_2,1,&blockGroupSize);
-
+    printf("SIZE OF BLOCK GROUP DESCRIPTOR -%"PRIu16"-\n",blockGroupSize);
     //Nos movemos hasta el block group descriptor y leemos los 32 bits
     //high del bitmap inode y seguidamente los de menos peso
 
-    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x24,BYTES_4,1,&)
+    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x24,BYTES_4,1,&upperInodeBitmap);
+    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x28,BYTES_4,1,&upperInodeTable);
+    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x4,BYTES_4,1,&lowerInodeBitmap);
+    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x8,BYTES_4,1,&lowerInodeTable);
+
+    //pasamos lo leido a la variable de 64 bits
+    printf("DEBUG: UpperBitmap -%"PRIu32"-\n", upperInodeBitmap);
+    printf("DEBUG: LowerBitmap -%"PRIu32"-\n", lowerInodeBitmap);
+    inodeBitmap = upperInodeBitmap;
+    printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
+    inodeBitmap = inodeBitmap << 32;
+    printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
+    inodeBitmap = inodeBitmap | lowerInodeBitmap;
+    printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
+
+
+    printf("DEBUG: UpperInodeTable -%"PRIu32"-\n", upperInodeTable);
+    printf("DEBUG: LowerIndoeTable -%"PRIu32"-\n", lowerInodeTable);
+    inodeTable = upperInodeTable;
+    inodeTable = inodeTable << 32;
+    inodeTable = inodeTable | lowerInodeTable;
+    printf("DEBUG: InodeTable -%"PRIu64"-\n", inodeTable);
+
+    uint16_t aux;
+    printf("POSITIONS %"PRIu64"\n",blockSize*inodeTable);
+    moveThroughExt4(SEEK_SET,blockSize*inodeTable,BYTES_2,1,&aux);
+    printf("FIRST THING TO READ -%"PRIu16"-\n",aux);
 
 
 }
