@@ -9,13 +9,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f0b9e617-b676-4a1a-9e0c-97e9a022002c" name="Default" comment="">
+    <list default="true" id="f0b9e617-b676-4a1a-9e0c-97e9a022002c" name="Default" comment="#2 Control de errores hechos, empezando ext4 search del fichero">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Ext4.c" beforeDir="false" afterPath="$PROJECT_DIR$/Ext4.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Ext4.h" beforeDir="false" afterPath="$PROJECT_DIR$/Ext4.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Fat32.c" beforeDir="false" afterPath="$PROJECT_DIR$/Fat32.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileUtilities.c" beforeDir="false" afterPath="$PROJECT_DIR$/FileUtilities.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/types.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,14 +24,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.45315903">
+    <splitter split-orientation="horizontal" split-proportion="0.6399456">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="Ext4.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Ext4.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="316">
-                  <caret line="146" column="11" selection-start-line="146" selection-start-column="11" selection-end-line="146" selection-end-column="11" />
+                <state relative-caret-position="203">
+                  <caret line="235" column="30" lean-forward="true" selection-start-line="235" selection-start-column="30" selection-end-line="235" selection-end-column="30" />
                 </state>
               </provider>
             </entry>
@@ -41,8 +39,8 @@
           <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/main.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="319">
-                  <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
+                <state relative-caret-position="578">
+                  <caret line="34" column="35" selection-start-line="34" selection-start-column="35" selection-end-line="34" selection-end-column="35" />
                 </state>
               </provider>
             </entry>
@@ -51,11 +49,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="types.h" pinned="false" current-in-tab="false">
+          <file leaf-file-name="types.h" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/types.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1037">
-                  <caret line="61" column="25" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
+                <state relative-caret-position="315">
+                  <caret line="84" column="18" selection-start-line="84" selection-start-column="18" selection-end-line="84" selection-end-column="18" />
                 </state>
               </provider>
             </entry>
@@ -63,17 +61,17 @@
           <file leaf-file-name="Fat32.c" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Fat32.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="211">
+                <state relative-caret-position="1009">
                   <caret line="95" column="6" selection-start-line="95" selection-start-column="6" selection-end-line="95" selection-end-column="6" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Ext4.h" pinned="false" current-in-tab="true">
+          <file leaf-file-name="Ext4.h" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Ext4.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="384">
-                  <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
+                <state relative-caret-position="312">
+                  <caret line="75" column="19" selection-start-line="75" selection-start-column="19" selection-end-line="75" selection-end-column="19" />
                 </state>
               </provider>
             </entry>
@@ -81,7 +79,7 @@
           <file leaf-file-name="FileUtilities.c" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/FileUtilities.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="201">
+                <state relative-caret-position="425">
                   <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
                 </state>
               </provider>
@@ -97,6 +95,11 @@
         <option value="CMakeLists.txt" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>blockSize</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
@@ -116,19 +119,20 @@
         <option value="$PROJECT_DIR$/FileUtilities.h" />
         <option value="&lt;1e33efca-38e0-4af4-be80-8ead8275a685&gt;/Fat32.c" />
         <option value="$PROJECT_DIR$/Fat32.h" />
-        <option value="$PROJECT_DIR$/types.h" />
         <option value="$PROJECT_DIR$/FileUtilities.c" />
         <option value="$PROJECT_DIR$/Fat32.c" />
         <option value="$PROJECT_DIR$/main.c" />
         <option value="$PROJECT_DIR$/Ext4.h" />
+        <option value="$PROJECT_DIR$/types.h" />
         <option value="$PROJECT_DIR$/Ext4.c" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-10" />
-    <option name="width" value="980" />
-    <option name="height" value="1040" />
+    <option name="x" value="-9" />
+    <option name="y" value="-9" />
+    <option name="width" value="1938" />
+    <option name="height" value="1048" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -136,7 +140,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -148,6 +151,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -157,7 +161,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="settings.editor.selected.configurable" value="CPPToolchains" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -194,7 +198,14 @@
       <workItem from="1524041135671" duration="10277000" />
       <workItem from="1524065522216" duration="1389000" />
       <workItem from="1524156294846" duration="2196000" />
-      <workItem from="1524212110971" duration="6202000" />
+      <workItem from="1524212110971" duration="6806000" />
+      <workItem from="1524235799961" duration="1188000" />
+      <workItem from="1524304269883" duration="1880000" />
+      <workItem from="1524309572333" duration="2102000" />
+      <workItem from="1524312291454" duration="1475000" />
+      <workItem from="1524390580892" duration="2464000" />
+      <workItem from="1524399300729" duration="6966000" />
+      <workItem from="1524558289529" duration="15858000" />
     </task>
     <task id="LOCAL-00001" summary="detect if the file exists, open file and  regular control.&#10;&#10;Change the char we read, it should be 2 chars">
       <created>1523470046486</created>
@@ -224,22 +235,36 @@
       <option name="project" value="LOCAL" />
       <updated>1524056748319</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="#2 Control de errores hechos, empezando ext4 search del fichero">
+      <created>1524221326486</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1524221326486</updated>
+    </task>
+    <task id="LOCAL-00006" summary="#2 Llegamos hasta el extent tree de ext4">
+      <created>1524432776945</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1524432776945</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70410000" />
+    <option name="totallyTimeSpent" value="102947000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Remote Host" order="3" weight="0.3294271" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.103515625" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12044271" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="CMake" order="7" weight="0.27172413" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="File Transfer" order="7" visible="true" weight="0.26344827" />
+      <window_info anchor="bottom" id="CMake" order="7" weight="0.20827587" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50065106" side_tool="true" weight="0.26344827" />
+      <window_info anchor="bottom" id="File Transfer" order="7" sideWeight="0.49934897" visible="true" weight="0.33931035" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -263,15 +288,15 @@
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="File Transfer" order="10" weight="0.2644628" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="CMake" order="11" weight="0.3292011" />
       <window_info id="Favorites" order="2" side_tool="true" />
     </layout-to-restore>
@@ -284,7 +309,9 @@
     <MESSAGE value="#1 Detectamos Ext4 (magic number)" />
     <MESSAGE value="#1 Leemos todo ext4, falta hacer el apartado de volumenes y diferenciar entre ext. Estructura FAT empezada." />
     <MESSAGE value="#1 Fase 1 completada, haria falta testar con diferentes tipos de FAT. También mirar el campo de numero de entries de FAT32" />
-    <option name="LAST_COMMIT_MESSAGE" value="#1 Fase 1 completada, haria falta testar con diferentes tipos de FAT. También mirar el campo de numero de entries de FAT32" />
+    <MESSAGE value="#2 Control de errores hechos, empezando ext4 search del fichero" />
+    <MESSAGE value="#2 Llegamos hasta el extent tree de ext4" />
+    <option name="LAST_COMMIT_MESSAGE" value="#2 Llegamos hasta el extent tree de ext4" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -593,10 +620,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/types.h">
+    <entry file="file://$PROJECT_DIR$/Fat32.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1037">
-          <caret line="61" column="25" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
+        <state relative-caret-position="446">
+          <caret line="37" selection-start-line="37" selection-end-line="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FileUtilities.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="34" column="35" selection-start-line="34" selection-start-column="35" selection-end-line="34" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Fat32.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1009">
+          <caret line="95" column="6" selection-start-line="95" selection-start-column="6" selection-end-line="95" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -607,45 +655,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Fat32.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FileUtilities.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Fat32.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="95" column="6" selection-start-line="95" selection-start-column="6" selection-end-line="95" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Ext4.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="87" lean-forward="true" selection-start-line="87" selection-end-line="87" />
+        <state relative-caret-position="312">
+          <caret line="75" column="19" selection-start-line="75" selection-start-column="19" selection-end-line="75" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/types.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="84" column="18" selection-start-line="84" selection-start-column="18" selection-end-line="84" selection-end-column="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Ext4.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="146" column="11" selection-start-line="146" selection-start-column="11" selection-end-line="146" selection-end-column="11" />
+        <state relative-caret-position="203">
+          <caret line="235" column="30" lean-forward="true" selection-start-line="235" selection-start-column="30" selection-end-line="235" selection-end-column="30" />
         </state>
       </provider>
     </entry>

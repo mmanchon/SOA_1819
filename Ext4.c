@@ -128,7 +128,7 @@ int checkIfExt4(int file) {
     has_extent = feature_incompat & 0x40;
     has_journal = feature_compat & 0x4;
 
-    if (has_extent>0) {
+    if (has_extent > 0) {
         return 1;
     } else if (has_journal) {
         printf(NOT_RECOGNIZED, "EXT3");
@@ -142,46 +142,37 @@ int checkIfExt4(int file) {
 
 
 void searchFileExt4() {
-    uint16_t blockGroupSize;
-    uint32_t upperInodeBitmap;
-    uint32_t lowerInodeBitmap;
-    uint64_t inodeBitmap;
-    uint32_t lowerInodeTable;
-    uint32_t upperInodeTable;
-    uint64_t inodeTable;
-    uint32_t feature_compat;
-    uint16_t reservedGdtBlocks;
-    uint32_t blockSize;
+    uint16_t blockGroupSize, /*reservedGdtBlocks,*/ inodeSize;
+    uint32_t /*upperInodeBitmap, lowerInodeBitmap,*/ lowerInodeTable, upperInodeTable/*feature_compat, */, inodesPerGroup;
+    uint64_t /*inodeBitmap,*/ inodeTable, initInodeTable;
 
-    moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_FEATURE_COMPAT, BYTES_4, 1, &feature_compat);
-    feature_compat = feature_compat & 0x10;
-    printf("FEATURE COMPAT HAS GDT BLOCKS -%"PRIu32"-\n", feature_compat);
-    moveThroughExt4(SEEK_SET, PADDING_EXT4 +0xCE, BYTES_2, 1, &reservedGdtBlocks);
-    printf("RESERVED GDT BLOCKS -%"PRIu16"-\n", reservedGdtBlocks);
-    moveThroughExt4(SEEK_SET, PADDING_EXT4+0x18, BYTES_4, MAX_NUM_LIST, &blockSize);
-    size = pow(2, (10 + blockSize));
-
+    // moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_FEATURE_COMPAT, BYTES_4, 1, &feature_compat);
+    // feature_compat = feature_compat & 0x10;
+    // printf("FEATURE COMPAT HAS GDT BLOCKS -%"PRIu32"-\n", feature_compat);
+    // moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0xCE, BYTES_2, 1, &reservedGdtBlocks);
+    //printf("RESERVED GDT BLOCKS -%"PRIu16"-\n", reservedGdtBlocks);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x18, BYTES_4, MAX_NUM_LIST, &blockSize);
+    blockSize = pow(2, (10 + blockSize));
     //leemos el tamaño del block group descriptors indicado en el superblock con offset de 0xFE
-    moveThroughExt4(SEEK_SET,PADDING_EXT4+OFF_BLOCKGROUP_SIZE,BYTES_2,1,&blockGroupSize);
-    printf("SIZE OF BLOCK GROUP DESCRIPTOR -%"PRIu16"-\n",blockGroupSize);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_BLOCKGROUP_SIZE, BYTES_2, 1, &blockGroupSize);
+    printf("SIZE OF BLOCK GROUP DESCRIPTOR -%"PRIu16"-\n", blockGroupSize);
     //Nos movemos hasta el block group descriptor y leemos los 32 bits
     //high del bitmap inode y seguidamente los de menos peso
-
-    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x24,BYTES_4,1,&upperInodeBitmap);
-    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x28,BYTES_4,1,&upperInodeTable);
-    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x4,BYTES_4,1,&lowerInodeBitmap);
-    moveThroughExt4(SEEK_SET,PADDING_BLOCKGROUP_DESCRIPTORS+0x8,BYTES_4,1,&lowerInodeTable);
+    //moveThroughExt4(SEEK_SET, PADDING_BLOCKGROUP_DESCRIPTORS + 0x24, BYTES_4, 1, &upperInodeBitmap);
+    moveThroughExt4(SEEK_SET, PADDING_BLOCKGROUP_DESCRIPTORS + 0x28, BYTES_4, 1, &upperInodeTable);
+    // moveThroughExt4(SEEK_SET, PADDING_BLOCKGROUP_DESCRIPTORS + 0x4, BYTES_4, 1, &lowerInodeBitmap);
+    moveThroughExt4(SEEK_SET, PADDING_BLOCKGROUP_DESCRIPTORS + 0x8, BYTES_4, 1, &lowerInodeTable);
 
     //pasamos lo leido a la variable de 64 bits
-    printf("DEBUG: UpperBitmap -%"PRIu32"-\n", upperInodeBitmap);
-    printf("DEBUG: LowerBitmap -%"PRIu32"-\n", lowerInodeBitmap);
-    inodeBitmap = upperInodeBitmap;
-    printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
-    inodeBitmap = inodeBitmap << 32;
-    printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
-    inodeBitmap = inodeBitmap | lowerInodeBitmap;
-    printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
-
+    /* printf("DEBUG: UpperBitmap -%"PRIu32"-\n", upperInodeBitmap);
+     printf("DEBUG: LowerBitmap -%"PRIu32"-\n", lowerInodeBitmap);
+     inodeBitmap = upperInodeBitmap;
+     printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
+     inodeBitmap = inodeBitmap << 32;
+     printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
+     inodeBitmap = inodeBitmap | lowerInodeBitmap;
+     printf("DEBUG: InodeBitmap -%"PRIu64"-\n", inodeBitmap);
+ */
 
     printf("DEBUG: UpperInodeTable -%"PRIu32"-\n", upperInodeTable);
     printf("DEBUG: LowerIndoeTable -%"PRIu32"-\n", lowerInodeTable);
@@ -190,10 +181,103 @@ void searchFileExt4() {
     inodeTable = inodeTable | lowerInodeTable;
     printf("DEBUG: InodeTable -%"PRIu64"-\n", inodeTable);
 
-    uint16_t aux;
-    printf("POSITIONS %"PRIu64"\n",blockSize*inodeTable);
-    moveThroughExt4(SEEK_SET,blockSize*inodeTable,BYTES_2,1,&aux);
-    printf("FIRST THING TO READ -%"PRIu16"-\n",aux);
+    //leemos el inodes per group y inodes size
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x28, BYTES_4, MAX_NUM_LIST, &inodesPerGroup);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x58, BYTES_4, MAX_NUM_LIST, &inodeSize);
+    printf("INODES PER GROUP: -%"PRIu32"-\n", inodesPerGroup);
+    printf("INODE SIZE: -%"PRIu16"-\n", inodeSize);
+
+    initInodeTable = blockSize * inodeTable;
+    searchExtentTree(initInodeTable, inodesPerGroup, inodeSize, 1);
 
 
+}
+
+int searchExtentTree(uint64_t initInodeTable, uint32_t inodesPerGroup, uint16_t inodeSize, int i) {
+    int index = 0, offset = 0;
+    uint16_t magicNumber;
+
+    if (i < 3) {
+        index = (i - 1) % inodesPerGroup;
+        offset = index * inodeSize;
+
+        lseek(fd, initInodeTable + offset + OFF_EXTENT_TREE, SEEK_SET);
+        read(fd, &magicNumber, sizeof(magicNumber));
+        printf("MAGIC NUMBER %x\n", magicNumber);
+        //Magic number para saber si es extent tree
+        if (magicNumber == 0xF30A) {
+            searchLeafs(initInodeTable + offset + OFF_EXTENT_TREE);
+            searchExtentTree(initInodeTable, inodesPerGroup, inodeSize, i+1);
+
+        }else{
+            searchExtentTree(initInodeTable, inodesPerGroup, inodeSize, i+1);
+        }
+    }
+
+    return 0;
+}
+
+int searchLeafs(uint64_t initExtentTree) {
+    uint16_t numEntries;
+    uint16_t depthExtentTree;
+    int i = 0;
+    printf("INIT EXTENT TREE: %"PRIu64"\n", initExtentTree);
+    moveThroughExt4(SEEK_SET, initExtentTree + 0x2, BYTES_2, 1, &numEntries);
+    printf("NUM ENTRIES: %"PRIu16"\n",numEntries);
+    moveThroughExt4(SEEK_SET, initExtentTree + 0x6, BYTES_2, 1, &depthExtentTree);
+    printf("DEPTH: %"PRIu16"\n",depthExtentTree);
+    if (depthExtentTree == 0) {
+        infoLeaf(initExtentTree + 0xC * (i + 1),numEntries);
+    }
+    return 0;
+}
+
+void infoLeaf(uint64_t initLeaf, uint16_t numEntries) {
+    uint16_t upperBlockNumber;
+    uint32_t lowerBlockNumber;
+    uint64_t blockAddress;
+    printf("INIT LEAF: %"PRIu64"\n", initLeaf);
+    moveThroughExt4(SEEK_SET, initLeaf + 0x6, BYTES_2, 1, &upperBlockNumber);
+    moveThroughExt4(SEEK_CUR, 0, BYTES_4, 1, &lowerBlockNumber);
+
+    blockAddress = upperBlockNumber;
+    blockAddress = blockAddress << 32;
+    blockAddress = blockAddress | lowerBlockNumber;
+    printf("BLOCK ADRESS: %"PRIu64"\n", blockAddress);
+
+    readDirectoryInfo(blockAddress*blockSize);
+}
+
+void readDirectoryInfo(uint64_t adress) {
+    uint8_t length, type;
+    char *name;
+    ext4_dir_entry_2 dir;
+
+    lseek(fd,adress,SEEK_SET);
+    read(fd,&dir, sizeof(dir));
+
+    printf("ADRESS: %"PRIu64"\n", adress);
+    printf("LENGTH: %"PRIu8"\n",dir.name_len);
+    printf("TYPE: %"PRIu8"\n",dir.file_type);
+
+   // if((dir.file_type & 0x1) == 1){
+        name = malloc(sizeof(dir.name_len));
+        read(fd,name,sizeof(char)*dir.name_len);
+        printf("NAME %s\n", name);
+  //  }else{
+        readDirectoryInfo(adress+0x8+dir.name_len);
+   // }
+   /*
+
+    lseek(fd, adress + 0x6, SEEK_SET);
+    read(fd, &length, sizeof(uint8_t));
+
+
+    lseek(fd, adress + 0x8, SEEK_SET);
+    name = (char *) malloc(sizeof(char) * length);
+
+    read(fd, name, sizeof(char) * length);
+
+    lseek(fd,adress+0x7,SEEK_SET);
+    read(fd,&type,sizeof(uint8_t));*/
 }

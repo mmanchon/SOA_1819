@@ -67,11 +67,13 @@
 #define OFF_LAST_CHECK 0x40
 #define OFF_LAST_MOUNT 0x2C
 #define OFF_BLOCKGROUP_SIZE 0xFE
+#define OFF_EXTENT_TREE 0x28
+
 #define PADDING_BLOCKGROUP_DESCRIPTORS 2048
 #define PADDING_GROUP_DESCRIPTORS 64
 
 int fd;
-
+uint32_t blockSize;
 /**
  * Función para mostrar la información de la Fase1
  * @param ext4 Tipo que contiene la información
@@ -85,4 +87,12 @@ void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 int checkIfExt4(int file);
 
 void searchFileExt4();
+
+int searchExtentTree(uint64_t initInodeTable, uint32_t inodesPerGroup, uint16_t inodeSize, int i);
+
+int searchLeafs(uint64_t initExtentTree);
+
+void infoLeaf(uint64_t initLeaf);
+
+void readDirectoryInfo(uint64_t adress);
 #endif //RAGNAROK_EXT4_H
