@@ -85,4 +85,12 @@ typedef struct __attribute__((packed)){
     uint8_t name_len;
     uint8_t file_type;
 }ext4_dir_entry_2;
+
+typedef struct{
+    uint16_t blockGroupSize;
+    uint16_t inodeSize;
+    uint32_t blockSize;
+    uint32_t inodesPerGroup;
+    uint64_t initInodeTable;
+}DeepSearchExt4;
 #endif //RAGNAROK_TYPES_H

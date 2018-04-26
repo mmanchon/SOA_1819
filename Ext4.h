@@ -73,7 +73,6 @@
 #define PADDING_GROUP_DESCRIPTORS 64
 
 int fd;
-uint32_t blockSize;
 /**
  * Función para mostrar la información de la Fase1
  * @param ext4 Tipo que contiene la información
@@ -88,11 +87,13 @@ int checkIfExt4(int file);
 
 void searchFileExt4();
 
-int searchExtentTree(uint64_t initInodeTable, uint32_t inodesPerGroup, uint16_t inodeSize, int i);
+int searchExtentTree(DeepSearchExt4 ext4);
 
-int searchLeafs(uint64_t initExtentTree);
+int searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4);
 
-void infoLeaf(uint64_t initLeaf);
+void infoLeaf(uint64_t initLeaf,DeepSearchExt4 ext4);
 
-void readDirectoryInfo(uint64_t adress);
+void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4);
+
+void internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4);
 #endif //RAGNAROK_EXT4_H
