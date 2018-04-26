@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
     int fd = 0;
     int systemType = 0;
     FileSystem fileSystem;
+    //Dir_info dir;
 
     if (!argc) {
         printf("Error. Incorrect parameter number\n");
@@ -34,7 +35,7 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
                     searchFileExt4();
                 } else if (systemType == 2) {
-
+                    fileSystem = searchFileFat32(fileSystem, argv[3]);
                 }
             }
         }
