@@ -79,4 +79,19 @@ typedef struct {
     VolumenExt4 ext4;
     VolumenFat32 fat32;
 }FileSystem;
+
+typedef struct __attribute__((packed)){
+    uint32_t inode;
+    uint16_t rec_len;
+    uint8_t name_len;
+    uint8_t file_type;
+}ext4_dir_entry_2;
+
+typedef struct{
+    uint16_t blockGroupSize;
+    uint16_t inodeSize;
+    uint32_t blockSize;
+    uint32_t inodesPerGroup;
+    uint64_t initInodeTable;
+}DeepSearchExt4;
 #endif //RAGNAROK_TYPES_H
