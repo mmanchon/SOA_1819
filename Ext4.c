@@ -142,7 +142,7 @@ int checkIfExt4(int file) {
 
 
 void searchFileExt4() {
-    uint32_t lowerInodeTable, upperInodeTable;
+    uint32_t lowerInodeTable, upperInodeTable, felx_bg;
     uint64_t /*inodeBitmap,*/ inodeTable ;
     DeepSearchExt4 ext4;
     // moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_FEATURE_COMPAT, BYTES_4, 1, &feature_compat);
@@ -151,6 +151,7 @@ void searchFileExt4() {
     // moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0xCE, BYTES_2, 1, &reservedGdtBlocks);
     //printf("RESERVED GDT BLOCKS -%"PRIu16"-\n", reservedGdtBlocks);
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x18, BYTES_4, MAX_NUM_LIST, &ext4.blockSize);
+    printf("--------------------- SEARCH FILE EXT4 ---------------------- \n");
     printf("BLOCKSIZE: -%"PRIu32"-\n", ext4.blockSize);
 
     ext4.blockSize = pow(2, (10 + ext4.blockSize));
@@ -187,10 +188,12 @@ void searchFileExt4() {
 
     //leemos el inodes per group y inodes size
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x28, BYTES_4, MAX_NUM_LIST, &ext4.inodesPerGroup);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x60, BYTES_4, MAX_NUM_LIST, &felx_bg);
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x58, BYTES_2, MAX_NUM_LIST, &ext4.inodeSize);
     printf("INODES PER GROUP: -%"PRIu32"-\n", ext4.inodesPerGroup);
     printf("INODE SIZE: -%"PRIu16"-\n", ext4.inodeSize);
     printf("BLOCKSIZE: -%"PRIu32"-\n", ext4.blockSize);
+    printf("FLEX BG: -%"PRIu32"-\n", (felx_bg & 0x200));
 
     ext4.initInodeTable = ext4.blockSize * inodeTable;
     searchExtentTree(ext4);
@@ -201,12 +204,16 @@ void searchFileExt4() {
 int searchExtentTree(DeepSearchExt4 ext4) {
     int index = 0, offset = 0;
     uint16_t magicNumber;
-
+    uint32_t aux;
         index = 1 % ext4.inodesPerGroup;
         offset = index * ext4.inodeSize;
 
         lseek(fd, ext4.initInodeTable + offset + OFF_EXTENT_TREE, SEEK_SET);
         read(fd, &magicNumber, sizeof(magicNumber));
+        printf("------------ SEARCH EXTENT TREE ------------\n");
+        lseek(fd, ext4.initInodeTable +0x20 +offset,SEEK_SET);
+        read(fd, &aux, sizeof(aux));
+        printf("FLAG: %"PRIu32"\n",(aux&0x80000));
         printf("MAGIC NUMBER %x\n", magicNumber);
         //Magic number para saber si es extent tree
         if (magicNumber == 0xF30A) {
@@ -221,7 +228,7 @@ int searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4) {
     uint16_t numEntries;
     uint16_t depthExtentTree;
 
-
+    printf("---------------SEARCH INFO EXTENT ------------\n");
     int i = 0;
     printf("INIT EXTENT TREE: %"PRIu64"\n", initExtentTree);
     moveThroughExt4(SEEK_SET, initExtentTree + 0x2, BYTES_2, 1, &numEntries);
@@ -262,7 +269,6 @@ void infoLeaf(uint64_t initLeaf, DeepSearchExt4 ext4) {
     uint32_t lowerBlockNumber;
     uint64_t blockAddress;
     uint16_t ee_len;
-    printf("INIT LEAF: %"PRIu64"\n", initLeaf);
     moveThroughExt4(SEEK_SET,initLeaf + 0x4 , BYTES_2, 1, &ee_len);
     moveThroughExt4(SEEK_CUR, 0, BYTES_2, 1, &upperBlockNumber);
     moveThroughExt4(SEEK_CUR, 0, BYTES_4, 1, &lowerBlockNumber);
@@ -270,7 +276,8 @@ void infoLeaf(uint64_t initLeaf, DeepSearchExt4 ext4) {
     blockAddress = upperBlockNumber;
     blockAddress = blockAddress << 32;
     blockAddress = blockAddress | lowerBlockNumber;
-
+    printf("------------INFO LEAF ---------------------\n");
+    printf("INIT LEAF: %"PRIu64"\n", initLeaf);
     printf("BLOCK ADRESS: %"PRIu64"\n", blockAddress);
     printf("BLOCK SIZE: -%"PRIu32"-\n", ext4.blockSize);
     readDirectoryInfo(blockAddress*ext4.blockSize,0,ee_len,ext4);
@@ -282,7 +289,7 @@ void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchEx
 
     lseek(fd,adress,SEEK_SET);
     read(fd,&dir, sizeof(dir));
-    printf("---------------------------------\n");
+    printf("------------READ DIRECTORY ENTRY ---------------------\n");
     printf("ADRESS: %"PRIu64"\n", adress);
     printf("INODE: %"PRIu32"\n",dir.inode);
     printf("DIR LENGTH %"PRIu16"\n",dir.rec_len);
@@ -293,17 +300,15 @@ void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchEx
     read(fd,name,sizeof(char)*dir.name_len);
     //name[strlen(name)] = '\0';
     printf("NAME %s\n", name);
-    printf("---------------------------------\n");
     //
     if(dir.inode != 0) {
 
         if((dir.file_type & 0x2) > 0 && memcmp(name,".",sizeof(char)) != 0 && memcmp(name,"..",sizeof(char)*2) != 0){
             printf("ENTRO\n");
-            searchInfoExtent(ext4.initInodeTable + dir.inode*ext4.inodeSize + OFF_EXTENT_TREE, ext4);
-            //readDirectoryInfo(dir.inode*blockSize,index+1,ee_len);
+            searchInfoExtent(ext4.initInodeTable + ((dir.inode-1)%ext4.inodesPerGroup)*ext4.inodeSize + OFF_EXTENT_TREE, ext4);
         }
-        free(name);
         readDirectoryInfo(adress + dir.rec_len,index+1,ee_len,ext4);
+        free(name);
 
     }
 
