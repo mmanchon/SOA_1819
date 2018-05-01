@@ -56,10 +56,8 @@
 
 
 /**
- * TESTING INFO
+ * IMPORTANT OFFSETS
  */
-#define HAS_JOURNAL "Has journal %d\n"
-
 #define OFF_FIRST_INODE 0x54
 #define OFF_VOLUME_NAME 0x78
 #define OFF_FEATURE_COMPAT 0x5C
@@ -68,7 +66,11 @@
 #define OFF_LAST_MOUNT 0x2C
 #define OFF_BLOCKGROUP_SIZE 0xFE
 #define OFF_EXTENT_TREE 0x28
+#define OFF_FILE_DATE 0x90
 
+/**
+ * PADDINGS
+ * */
 #define PADDING_BLOCKGROUP_DESCRIPTORS 2048
 #define PADDING_GROUP_DESCRIPTORS 64
 
@@ -85,7 +87,7 @@ void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
 int checkIfExt4(int file);
 
-void searchFileExt4();
+void searchFileExt4(char *file);
 
 int searchExtentTree(DeepSearchExt4 ext4);
 
@@ -96,4 +98,8 @@ void infoLeaf(uint64_t initLeaf,DeepSearchExt4 ext4);
 void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4);
 
 void internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4);
+
+void checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 ext4, char *name);
+
+char *getTime(uint32_t time);
 #endif //RAGNAROK_EXT4_H
