@@ -98,6 +98,45 @@ Lba_info recoveryLastTrace(Lba_info *trace,int *nTraces, Lba_info info){
     return info;
 }
 
+char * getClusterContent(Lba_info info, int *size){
+    char aux;
+    char *content_file = NULL;
+
+    moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_1, MAX_NUM_LIST, &aux);
+    content_file = (char *) realloc(content_file, sizeof(char)+(*size));
+    content_file[(*size)] = aux;
+    (*size)++;
+
+    while((*size)<info.dir.size || aux != 0){
+        moveThroughFat32(SEEK_CUR, NO_OFF, BYTES_1, MAX_NUM_LIST, &aux);
+        content_file = (char *) realloc(content_file, sizeof(char)+(*size));
+        content_file[(*size)] = aux;
+        (*size)++;
+    }
+    return content_file;
+}
+
+void showContent(Lba_info info,char *argv, FileSystem fileSystem){
+    char aux;
+    int size=0;
+    char *content_file = NULL;
+
+    info.i_cluster = getNextClusterAddr(info.lba_adrr);
+    getAddr(1,&info,fileSystem);
+
+    content_file = getClusterContent(info,&size);
+    getAddr(2,&info,fileSystem);
+
+    //COMPROBAR FUNCIONAMENTO
+    while(size<info.dir.size && info.lba_adrr<=0xfff8){
+        strcat(content_file,getClusterContent(info,&size));
+    }
+
+    printf("Content:\n\n%s\n",content_file);
+    free(content_file);
+    exit(1);
+}
+
 
 void goTroughFS(Lba_info info,char *argv, FileSystem fileSystem, Lba_info *trace, int *nTraces){
     //uint32_t new_addr;
@@ -168,6 +207,8 @@ void goTroughFS(Lba_info info,char *argv, FileSystem fileSystem, Lba_info *trace
             info.dir.date.day = ((info.dir.date.hex_date & 0x1F));
             printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size, info.dir.date.day, info.dir.date.month,
                    info.dir.date.year);
+            //FASE 4
+            showContent(info,argv,fileSystem);
             exit(1);
         } else {
             info.lba_adrr += 0x20;
