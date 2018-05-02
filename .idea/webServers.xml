@@ -11,7 +11,7 @@
         </fileTransfer>
       </webServer>
       <webServer id="24b8c50f-0924-46ab-87c9-261213220d39" name="montserrat_uni" url="http://montserrat.salleurl.edu">
-        <fileTransfer host="montserrat.salleurl.edu" port="22" rootFolder="/users/home/alumnes/ls30759/" accessType="SFTP">
+        <fileTransfer host="montserrat.salleurl.edu" port="22" rootFolder="/users/home/alumnes/ls31343/SOA/Ragnarok" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

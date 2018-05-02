@@ -23,16 +23,29 @@
 /**
  * ERROR MESSAGES
  * */
-#define NOT_FOUND "Error.FileSystem not found\n"
-#define NOT_RECOGNIZED "File System not recognized (%s)\n"
+#define NOT_FOUND "Error.FileSystem not found.\n"
+#define NOT_RECOGNIZED "File System not recognized (%s).\n"
 
+/**
+ * FASE 3 MESSAGES
+ * */
+#define FILE_NOT_FOUND "Error. File not found.\n"
+#define ARGUMENTS_NUMBER "Error.Incorrect parameter number.\n"
+#define FILE_FOUND "File found! Size: %"PRIu64" bytes.  Created on: %s.\n"
 
+/**
+ * NUMBER OF BYTES WE READ
+ * */
 #define BYTES_1 1
 #define BYTES_2 2
 #define BYTES_4 4
 #define BYTES_8 8
 #define BYTES_11 11
 #define BYTES_16 16
+
+/*
+ * MAXIMUM ARGUMENT NUMBER
+ * */
 #define MAX_NUM_LIST 1
 
 
@@ -80,6 +93,7 @@ typedef struct {
     VolumenFat32 fat32;
 }FileSystem;
 
+//Cuando hemos llegado al directory entrie entonces leemos directamente este typedef
 typedef struct __attribute__((packed)){
     uint32_t inode;
     uint16_t rec_len;
@@ -87,11 +101,16 @@ typedef struct __attribute__((packed)){
     uint8_t file_type;
 }ext4_dir_entry_2;
 
+//Typedef necesario para la fase 3.
+//Vamos pasando este typedef de forma recursiva
 typedef struct{
     uint16_t blockGroupSize;
     uint16_t inodeSize;
     uint32_t blockSize;
     uint32_t inodesPerGroup;
     uint64_t initInodeTable;
+    char *file;
+    uint64_t blockAddress;
 }DeepSearchExt4;
+
 #endif //RAGNAROK_TYPES_H

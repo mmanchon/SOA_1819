@@ -22,12 +22,12 @@ int detectFileSystemType(int fd) {
     uint16_t buffer;
 
     if (lseek(fd, PADDING_EXT4 + OFFSET_MAGICNUMBER, SEEK_SET) < 0) {
-        printf("ERROR\n");
+       // printf("ERROR\n");
         return 0;
     } else {
 
         if (read(fd, &buffer, sizeof(uint16_t)) <= 0) {
-            printf("ERROR\n");
+            //printf("ERROR\n");
             return 0;
 
         } else {
