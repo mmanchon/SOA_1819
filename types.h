@@ -111,6 +111,7 @@ typedef struct{
     uint64_t initInodeTable;
     char *file;
     uint64_t blockAddress;
+    uint64_t initInodeFile;
 }DeepSearchExt4;
 
 #endif //RAGNAROK_TYPES_H

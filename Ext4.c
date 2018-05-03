@@ -154,7 +154,7 @@ int checkIfExt4(int file) {
 
 void searchFileExt4(char *file) {
     uint32_t lowerInodeTable, upperInodeTable, felx_bg;
-    uint64_t inodeTable;
+    uint64_t inodeTable,fileInode = 0;
     DeepSearchExt4 ext4;
 
     //guardamos el nombre del fichero en el typedef
@@ -198,14 +198,20 @@ void searchFileExt4(char *file) {
     ext4.initInodeTable = ext4.blockSize * inodeTable;
 
     //Buscamos el inicio del extent tree
-    searchExtentTree(ext4);
+    fileInode = searchExtentTree(ext4);
+    if(fileInode == 0){
+        printf(FILE_NOT_FOUND);
+    }else{
+        printf("FILE INODE FINAL%"PRIu64"\n",fileInode);
 
+    }
 }
 
-int searchExtentTree(DeepSearchExt4 ext4) {
+uint64_t searchExtentTree(DeepSearchExt4 ext4) {
     int index = 0, offset = 0;
     uint16_t magicNumber;
     uint32_t aux;
+    uint64_t fileInode = 0;
 
     //formula para saber donde se encuentra el inodo correspondiente (empezamos por el raiz)
     index = 1 % ext4.inodesPerGroup;
@@ -224,46 +230,50 @@ int searchExtentTree(DeepSearchExt4 ext4) {
     //Magic number para saber si es extent tree
     if (magicNumber == 0xF30A) {
         //vamos a ver la información del extent tree
-        searchInfoExtent(ext4.initInodeTable + offset + OFF_EXTENT_TREE, ext4);
+        fileInode = searchInfoExtent(ext4.initInodeTable + offset + OFF_EXTENT_TREE, ext4);
 
     }
 
-    printf(FILE_NOT_FOUND);
-
-    return 0;
+    return fileInode;
 }
 
-int searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4) {
+uint64_t searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4) {
     uint16_t numEntries;
     uint16_t depthExtentTree;
+    uint64_t fileInode = 0;
     int i = 0;
 
     //leemos la informacion del numero de entradas validas y el depth del extent tree
     moveThroughExt4(SEEK_SET, initExtentTree + 0x2, BYTES_2, 1, &numEntries);
     moveThroughExt4(SEEK_SET, initExtentTree + 0x6, BYTES_2, 1, &depthExtentTree);
 
-    /*  printf("---------------SEARCH INFO EXTENT ------------\n");
+    /* printf("---------------SEARCH INFO EXTENT ------------\n");
       printf("INIT EXTENT TREE: %"PRIu64"\n", initExtentTree);
       printf("DEPTH: %"PRIu16"\n",depthExtentTree);
-      printf("NUM ENTRIES: %"PRIu16"\n",numEntries);*/
-
+      printf("NUM ENTRIES: %"PRIu16"\n",numEntries);
+*/
     if (depthExtentTree == 0) {
     //en caso que el depth sea igual a 0 entonces es hoja, se mira por cada una de las hojas
         for (i = 0; i < numEntries; i++) {
-            infoLeaf(initExtentTree + 0xC * (i + 1), ext4);
+            if((fileInode = infoLeaf(initExtentTree + 0xC * (i + 1), ext4)) > 0){
+                //printf("FILE INODE %"PRIu64"\n",fileInode);
+                return fileInode;
+            }
 
         }
 
     } else {
         //en caso de que sea diferente a 0 tenemos un extent tree
         for (i = 0; i < numEntries; i++) {
-            internalNodesExtentTree(initExtentTree + 0xC * (i + 1), ext4);
+           if((fileInode = internalNodesExtentTree(initExtentTree + 0xC * (i + 1), ext4)) > 0){
+               return fileInode;
+           }
         }
     }
-    return 0;
+    return fileInode;
 }
 
-void internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4) {
+uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4) {
     uint16_t upperExtentTree;
     uint32_t lowerExtentTree;
     uint64_t extentTree;
@@ -275,14 +285,15 @@ void internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4) {
     extentTree = extentTree << 32;
     extentTree = extentTree | lowerExtentTree;
 
-    searchInfoExtent(extentTree * ext4.blockSize, ext4);
+    return searchInfoExtent(extentTree * ext4.blockSize, ext4);
 
 }
 
-void infoLeaf(uint64_t initLeaf, DeepSearchExt4 ext4) {
+uint64_t infoLeaf(uint64_t initLeaf, DeepSearchExt4 ext4) {
     uint16_t upperBlockNumber;
     uint32_t lowerBlockNumber;
     uint16_t ee_len;
+    uint64_t fileInode = 0;
 
     moveThroughExt4(SEEK_SET, initLeaf + 0x4, BYTES_2, 1, &ee_len);
     moveThroughExt4(SEEK_CUR, 0, BYTES_2, 1, &upperBlockNumber);
@@ -297,12 +308,15 @@ void infoLeaf(uint64_t initLeaf, DeepSearchExt4 ext4) {
      printf("BLOCK ADRESS: %"PRIu64"\n", blockAddress);
      printf("BLOCK SIZE: -%"PRIu32"-\n", ext4.blockSize);*/
 
-    readDirectoryInfo(ext4.blockAddress * ext4.blockSize, 0, ee_len, ext4);
+    fileInode = readDirectoryInfo(ext4.blockAddress * ext4.blockSize, 0, ee_len, ext4);
+
+    return fileInode;
 }
 
-void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4) {
+uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4) {
     char *name;
     ext4_dir_entry_2 dir;
+    uint64_t fileInode = 0;
 
     lseek(fd, adress, SEEK_SET);
     read(fd, &dir, sizeof(dir));
@@ -315,8 +329,8 @@ void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchEx
     if (dir.inode != 0 && ((ee_len * ext4.blockSize)+(ext4.blockSize*ext4.blockAddress)) > (adress) ) {
 
 
-      //  printf("ADRESS: %"PRIu64"\n", adress);
-     /*   printf("DIR LENGTH %"PRIu16"\n",dir.rec_len);
+      /* printf("ADRESS: %"PRIu64"\n", adress);
+     printf("DIR LENGTH %"PRIu16"\n",dir.rec_len);
         printf("LENGTH: %"PRIu8"\n",dir.name_len);
         printf("TYPE: %"PRIu8"\n",dir.file_type);
         printf("EELEN: %"PRIu16"\n",ee_len);*/
@@ -326,25 +340,28 @@ void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchEx
 
         if ((dir.file_type & 0x2) > 0 && memcmp(name, ".", sizeof(char)) != 0 && memcmp(name, "..", sizeof(char) * 2) != 0) {
 
-            searchInfoExtent(
-                    ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize + OFF_EXTENT_TREE,
-                    ext4);
+            if((fileInode = searchInfoExtent(ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize + OFF_EXTENT_TREE,ext4)) == 0){
+                if ((fileInode = checkFile(dir, ext4, name)) == 0) {
+                    fileInode = readDirectoryInfo(adress + dir.rec_len, index + 1, ee_len, ext4);
+                }
+            }
+        }else {
+            if ((fileInode = checkFile(dir, ext4, name)) == 0) {
+                fileInode = readDirectoryInfo(adress + dir.rec_len, index + 1, ee_len, ext4);
+            }
         }
-
-        checkFile(dir, ext4, name);
-        readDirectoryInfo(adress + dir.rec_len, index + 1, ee_len, ext4);
         free(name);
-
     }
+    return fileInode;
 
 }
 
-void checkFile(ext4_dir_entry_2 dir, DeepSearchExt4 ext4, char *name) {
+uint64_t checkFile(ext4_dir_entry_2 dir, DeepSearchExt4 ext4, char *name) {
     uint32_t date, lowerFileSize, upperFileSize;
     uint64_t fileSize;
 
     if ((dir.file_type & 0x1) > 0) {
-        if (memcmp(ext4.file, name, sizeof(char) * strlen(ext4.file)) == 0){
+        if (memcmp(ext4.file, name, sizeof(char) * strlen(name)) == 0){
             moveThroughExt4(SEEK_SET,
                             ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize + OFF_FILE_DATE,
                             BYTES_4,
@@ -367,8 +384,11 @@ void checkFile(ext4_dir_entry_2 dir, DeepSearchExt4 ext4, char *name) {
             fileSize = fileSize << 32;
             fileSize = fileSize | lowerFileSize;
 
+            printf("ENCONTRADO! %"PRIu64"\n",ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize);
             printf(FILE_FOUND,fileSize,getTime(date));
-            exit(1);
+            return ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize;
         }
     }
+
+    return 0;
 }

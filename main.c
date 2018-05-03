@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
                 systemType = detectFileSystemType(fd);
 
                 if (systemType == 1) {
+                    searchFileExt4(argv[3]);
 
                 } else if (systemType == 2) {
 
