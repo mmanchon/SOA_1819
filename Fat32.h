@@ -71,7 +71,10 @@ typedef struct{
     uint64_t cluster_begin_lba;
     uint64_t lba_adrr;
     uint32_t i_cluster;
-    char name[12];
+    uint32_t init_cluster;
+    char name[255];
+    char old[255];
+    char new_name[255];
     Dir_info dir;
 }Lba_info;
 
