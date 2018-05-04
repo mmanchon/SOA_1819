@@ -98,6 +98,7 @@ Lba_info *updateTrace(Lba_info *trace, int *nTraces, Lba_info info) {
 Lba_info recoveryLastTrace(Lba_info *trace, int *nTraces, Lba_info info) {
     if ((*nTraces) <= 0) {
         free(trace);
+        printf("\n\nFile not found :[\n");
         exit(1);
     } else {
         info = trace[(*nTraces) - 1];
@@ -143,6 +144,7 @@ void showContent(Lba_info info, char *argv, FileSystem fileSystem) {
 
     printf("Content:\n\n%s\n", content_file);
     free(content_file);
+
     exit(1);
 }
 
@@ -177,6 +179,7 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
                 //printf("INFO BACK: %s,%x\n",info.name,info.lba_adrr);
                 goTroughFS(info, argv, fileSystem, trace, nTraces, mode);
             } else {
+                printf("\n\nFile not found :[\n");
                 exit(1);
             }
         } else {
@@ -252,14 +255,14 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
 
             //FASE 4
             if(mode)showContent(info, argv, fileSystem);
-
+            //printf("\n\nFile not found :[\n");
             exit(1);
         } else {
 
             info.lba_adrr += 0x20;
             printf("\nhola lele--> %x\n", info.lba_adrr);
             //gets(stdin);
-            goTroughFS(infitho, argv, fileSystem, trace, nTraces, mode);
+            goTroughFS(info, argv, fileSystem, trace, nTraces, mode);
         }
     }
 }
