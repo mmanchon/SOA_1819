@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
 
                 } else if (systemType == 2) {
-
+                    showContentFileFat32(fileSystem,argv[3]);
                 }else{
                     printf(NOT_FOUND);
                 }

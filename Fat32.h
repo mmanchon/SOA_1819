@@ -70,6 +70,7 @@ typedef struct{
 typedef struct{
     uint64_t cluster_begin_lba;
     uint64_t lba_adrr;
+    uint64_t max_lba_adrr;
     uint32_t i_cluster;
     uint32_t init_cluster;
     char name[255];
@@ -123,7 +124,7 @@ int checkIfFat32(int file);
  * @return returnem el fs amb la informació obtinguda.
  */
 //FileSystem goTroughFS(FileSystem fileSystem);
-void goTroughFS(Lba_info info,char *argv, FileSystem fileSystem, Lba_info *trace, int *nTraces);
+void goTroughFS(Lba_info info,char *argv, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode);
 
 /**
  * Funció destinada a la cerca del fitxer introduit per l'usuari
@@ -171,5 +172,14 @@ Lba_info recoveryLastTrace(Lba_info *trace,int *nTraces, Lba_info info);
  * @param fileSystem
  */
 void getAddr(int mode,Lba_info *info,FileSystem fileSystem);
+
+/**
+ * Funció encarregada de recorre l'arbre del sistema de fitxers i
+ * mostrar el contingut del fitxer.
+ * @param fileSystem
+ * @param argv
+ * @return
+ */
+FileSystem showContentFileFat32(FileSystem fileSystem, char *argv);
 
 #endif
