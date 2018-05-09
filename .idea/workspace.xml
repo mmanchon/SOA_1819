@@ -10,7 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f0b9e617-b676-4a1a-9e0c-97e9a022002c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fat32.c" beforeDir="false" afterPath="$PROJECT_DIR$/Fat32.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fat32.h" beforeDir="false" afterPath="$PROJECT_DIR$/Fat32.h" afterDir="false" />
@@ -31,8 +30,8 @@
           <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/main.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="394">
-                  <caret line="58" column="42" selection-start-line="58" selection-start-column="42" selection-end-line="58" selection-end-column="42" />
+                <state relative-caret-position="532">
+                  <caret line="81" column="39" selection-start-line="81" selection-start-column="39" selection-end-line="81" selection-end-column="39" />
                   <folding>
                     <element signature="e#15#33#0" expanded="true" />
                   </folding>
@@ -43,8 +42,8 @@
           <file leaf-file-name="Fat32.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Fat32.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="459">
-                  <caret line="252" column="20" selection-start-line="252" selection-start-column="20" selection-end-line="252" selection-end-column="20" />
+                <state relative-caret-position="559">
+                  <caret line="262" column="34" selection-start-line="262" selection-start-column="34" selection-end-line="262" selection-end-column="34" />
                 </state>
               </provider>
             </entry>
@@ -74,8 +73,8 @@
           <file leaf-file-name="Fat32.h" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Fat32.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="679">
-                  <caret line="177" column="3" selection-start-line="177" selection-start-column="3" selection-end-line="177" selection-end-column="3" />
+                <state relative-caret-position="716">
+                  <caret line="184" column="57" selection-start-line="184" selection-start-column="57" selection-end-line="184" selection-end-column="57" />
                 </state>
               </provider>
             </entry>
@@ -132,6 +131,8 @@
       <find>size</find>
       <find>recoveryLastTrace</find>
       <find>goTroughFS</find>
+      <find>exit(1);</find>
+      <find>@@</find>
     </findStrings>
     <replaceStrings>
       <replace>info-&gt;</replace>
@@ -162,8 +163,8 @@
         <option value="$PROJECT_DIR$/makefile" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/main.c" />
-        <option value="$PROJECT_DIR$/Fat32.c" />
         <option value="$PROJECT_DIR$/Fat32.h" />
+        <option value="$PROJECT_DIR$/Fat32.c" />
       </list>
     </option>
   </component>
@@ -251,7 +252,7 @@
       <workItem from="1525000218589" duration="1077000" />
       <workItem from="1525274900961" duration="17365000" />
       <workItem from="1525362254408" duration="3011000" />
-      <workItem from="1525423435347" duration="5595000" />
+      <workItem from="1525423435347" duration="12734000" />
     </task>
     <task id="LOCAL-00001" summary="detect if the file exists, open file and  regular control.&#10;&#10;Change the char we read, it should be 2 chars">
       <created>1523470046486</created>
@@ -309,11 +310,25 @@
       <option name="project" value="LOCAL" />
       <updated>1525334920669</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="#3 #4 Resuelto problema del recorrido y lognames, junto con mostrar el contenido del fichero correctamente.">
+      <created>1525438703054</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1525438703055</updated>
+    </task>
+    <task id="LOCAL-00010" summary="#4 Mensaje de no se encuentra fichero (Fat32)">
+      <created>1525439366075</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1525439366075</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="186522000" />
+    <option name="totallyTimeSpent" value="193661000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
@@ -377,7 +392,9 @@
     <MESSAGE value="#4 Cat del Fat32 implementat, falta comprovar fixers grans." />
     <MESSAGE value="#4 Merge with new main" />
     <MESSAGE value="#3 Trace update and Lognames fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="#3 Trace update and Lognames fixed" />
+    <MESSAGE value="#3 #4 Resuelto problema del recorrido y lognames, junto con mostrar el contenido del fichero correctamente." />
+    <MESSAGE value="#4 Mensaje de no se encuentra fichero (Fat32)" />
+    <option name="LAST_COMMIT_MESSAGE" value="#4 Mensaje de no se encuentra fichero (Fat32)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -726,25 +743,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="394">
-          <caret line="58" column="42" selection-start-line="58" selection-start-column="42" selection-end-line="58" selection-end-column="42" />
+        <state relative-caret-position="532">
+          <caret line="81" column="39" selection-start-line="81" selection-start-column="39" selection-end-line="81" selection-end-column="39" />
           <folding>
             <element signature="e#15#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Fat32.c">
+    <entry file="file://$PROJECT_DIR$/Fat32.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="252" column="20" selection-start-line="252" selection-start-column="20" selection-end-line="252" selection-end-column="20" />
+        <state relative-caret-position="716">
+          <caret line="184" column="57" selection-start-line="184" selection-start-column="57" selection-end-line="184" selection-end-column="57" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Fat32.h">
+    <entry file="file://$PROJECT_DIR$/Fat32.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="679">
-          <caret line="177" column="3" selection-start-line="177" selection-start-column="3" selection-end-line="177" selection-end-column="3" />
+        <state relative-caret-position="559">
+          <caret line="262" column="34" selection-start-line="262" selection-start-column="34" selection-end-line="262" selection-end-column="34" />
         </state>
       </provider>
     </entry>

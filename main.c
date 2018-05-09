@@ -67,6 +67,91 @@ int main(int argc, char **argv) {
                     printf(NOT_FOUND);
                 }
             }
+        } else if (memcmp(argv[1], "-r", sizeof(char) * strlen(argv[1])) == 0){
+
+            if(argc != 4){
+                printf(ARGUMENTS_NUMBER);
+
+            }else{
+                fd = exisitsFile(argv[2]);
+                systemType = detectFileSystemType(fd);
+
+                if (systemType == 1) {
+
+                } else if (systemType == 2) {
+                    toggleReadModeFat32(fileSystem,argv[3]);
+                }else{
+                    printf(NOT_FOUND);
+                }
+            }
+        }else if (memcmp(argv[1], "-w", sizeof(char) * strlen(argv[1])) == 0){
+
+            if(argc != 4){
+                printf(ARGUMENTS_NUMBER);
+
+            }else{
+                fd = exisitsFile(argv[2]);
+                systemType = detectFileSystemType(fd);
+
+                if (systemType == 1) {
+
+                } else if (systemType == 2) {
+                    //activeReadModeFat32(fileSystem,argv[3]);
+                }else{
+                    printf(NOT_FOUND);
+                }
+            }
+        }else if (memcmp(argv[1], "-h", sizeof(char) * strlen(argv[1])) == 0){
+
+            if(argc != 4){
+                printf(ARGUMENTS_NUMBER);
+
+            }else{
+                fd = exisitsFile(argv[2]);
+                systemType = detectFileSystemType(fd);
+
+                if (systemType == 1) {
+
+                } else if (systemType == 2) {
+                    //activeReadModeFat32(fileSystem,argv[3]);
+                }else{
+                    printf(NOT_FOUND);
+                }
+            }
+        }else if (memcmp(argv[1], "-s", sizeof(char) * strlen(argv[1])) == 0){
+
+            if(argc != 4){
+                printf(ARGUMENTS_NUMBER);
+
+            }else{
+                fd = exisitsFile(argv[2]);
+                systemType = detectFileSystemType(fd);
+
+                if (systemType == 1) {
+
+                } else if (systemType == 2) {
+                    //activeReadModeFat32(fileSystem,argv[3]);
+                }else{
+                    printf(NOT_FOUND);
+                }
+            }
+        }else if (memcmp(argv[1], "-d", sizeof(char) * strlen(argv[1])) == 0){
+
+            if(argc != 4){
+                printf(ARGUMENTS_NUMBER);
+
+            }else{
+                fd = exisitsFile(argv[2]);
+                systemType = detectFileSystemType(fd);
+
+                if (systemType == 1) {
+
+                } else if (systemType == 2) {
+                    //activeReadModeFat32(fileSystem,argv[3]);
+                }else{
+                    printf(NOT_FOUND);
+                }
+            }
         }
     }
 

@@ -182,4 +182,5 @@ void getAddr(int mode,Lba_info *info,FileSystem fileSystem);
  */
 FileSystem showContentFileFat32(FileSystem fileSystem, char *argv);
 
+FileSystem toggleReadModeFat32(FileSystem fileSystem,char *argv);
 #endif

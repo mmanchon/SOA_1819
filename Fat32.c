@@ -160,7 +160,7 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
         moveThroughFat32(SEEK_SET, info.lba_adrr + 28, BYTES_4, MAX_NUM_LIST, &info.dir.size);
         info.dir.name[11] = 0;
     } else {
-        printf("\nEND!!\n");
+        //printf("\nEND!!\n");
     }
 
     if (info.dir.name[0] == 0 || info.lba_adrr == info.max_lba_adrr) {
@@ -171,11 +171,11 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
         //Diferenciem si la fat diu que no hi han mes clusters.
         if (info.lba_adrr >= 0xfff8) {
 
-            printf("HOLA TETE-->%X --------------- %x\n", info.lba_adrr, info.max_lba_adrr);
+            //printf("HOLA TETE-->%X --------------- %x\n", info.lba_adrr, info.max_lba_adrr);
 
             if (info.i_cluster != info.init_cluster) {
                 info = recoveryLastTrace(trace, nTraces, info);
-                printf("#####  BACK  ######\n\n");
+                //printf("#####  BACK  ######\n\n");
                 //printf("INFO BACK: %s,%x\n",info.name,info.lba_adrr);
                 goTroughFS(info, argv, fileSystem, trace, nTraces, mode);
             } else {
@@ -223,7 +223,7 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
 
             //Nomes printem si no es ~ o espai entre el nom i extensio
             if (info.dir.name[6] != 0x7e && info.dir.name[6] != 0x20 /*&& info.dir.name[3] >= 90*/)
-                printf("\n\nDir name: %s\n@@--> %x\n", info.dir.name, info.lba_adrr);
+                printf("\n\nDir name: %s\n", info.dir.name, info.lba_adrr);
 
         }
 
@@ -249,24 +249,34 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
             info.dir.date.year = ((info.dir.date.hex_date & 0xFE00) >> 9) + 1980;
             info.dir.date.month = ((info.dir.date.hex_date & 0xF0) >> 5);
             info.dir.date.day = ((info.dir.date.hex_date & 0x1F));
-            if(!mode)printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size, info.dir.date.day,
-                   info.dir.date.month,
-                   info.dir.date.year);
+            switch (mode){
+                case 0://Fase2-3 --> -search
+                    printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size, info.dir.date.day,
+                           info.dir.date.month,
+                           info.dir.date.year);
+                    break;
+                case 1://FASE 4 --> -show
+                    showContent(info, argv, fileSystem);
+                    break;
+                case 2://FASE 5 --> -r
+                    //TODO READ MODE
+                    //OFFSET 11 1B
+                    // READ_ONLY=0x01 HIDDEN=0x02 SYSTEM=0x04 VOLUME_ID=0x08 DIRECTORY=0x10 ARCHIVE=0x20 LFN=READ_ONLY|HIDDEN|SYSTEM|VOLUME_ID
+                    break;
+            }
 
-            //FASE 4
-            if(mode)showContent(info, argv, fileSystem);
-            //printf("\n\nFile not found :[\n");
             exit(1);
         } else {
 
             info.lba_adrr += 0x20;
-            printf("\nhola lele--> %x\n", info.lba_adrr);
+            //printf("\nhola lele--> %x\n", info.lba_adrr);
             //gets(stdin);
             goTroughFS(info, argv, fileSystem, trace, nTraces, mode);
         }
     }
 }
-FileSystem showContentFileFat32(FileSystem fileSystem, char *argv){
+
+FileSystem showContentFileFat32(FileSystem fileSystem, char *argv) {
     Lba_info info;
     Lba_info *trace;
     int nTraces;
@@ -326,6 +336,29 @@ FileSystem initSearchInfoFat32(FileSystem fileSystem) {
     fileSystem = getInfoFat32(fileSystem);
     showInfoFat32(fileSystem.fat32);
     return fileSystem;
+}
+
+FileSystem toggleReadModeFat32(FileSystem fileSystem,char *argv){
+    Lba_info info;
+    Lba_info *trace;
+    int nTraces;
+
+    fileSystem = getInfoFat32(fileSystem);
+
+    //Inicialitzem les @
+    info.i_cluster = fileSystem.fat32.rootCluster;
+    info.init_cluster = info.i_cluster;
+
+    nTraces = 0;
+    trace = NULL;
+
+    getAddr(0, &info, fileSystem);
+    getAddr(1, &info, fileSystem);
+    info.max_lba_adrr = info.lba_adrr + 512;
+    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
+    goTroughFS(info, argv, fileSystem, trace, &nTraces, 0);
+    return fileSystem;
+
 }
 
 void moveThroughFat32(int whence, off_t offset, int bytes, int numArg, ...) {
@@ -416,3 +449,4 @@ int checkIfFat32(int file) {
     }
 
 }
+
