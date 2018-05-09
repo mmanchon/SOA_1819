@@ -89,17 +89,17 @@ int checkIfExt4(int file);
 
 void searchFileExt4(char *file);
 
-int searchExtentTree(DeepSearchExt4 ext4);
+uint64_t searchExtentTree(DeepSearchExt4 ext4);
 
-int searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4);
+uint64_t searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4);
 
-void infoLeaf(uint64_t initLeaf,DeepSearchExt4 ext4);
+uint64_t infoLeaf(uint64_t initLeaf,DeepSearchExt4 ext4);
 
-void readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4);
+uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4);
 
-void internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4);
+uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4);
 
-void checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 ext4, char *name);
+uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 ext4, char *name);
 
 char *getTime(uint32_t time);
 #endif //RAGNAROK_EXT4_H
