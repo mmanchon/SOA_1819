@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
                     searchFileExt4(argv[3]);
 
                 } else if (systemType == 2) {
-
+                    showContentFileFat32(fileSystem,argv[3]);
                 }else{
                     printf(NOT_FOUND);
                 }
