@@ -53,7 +53,7 @@ void getAddr(int mode, Lba_info *info, FileSystem fileSystem) {
 }
 
 void getLongName(Lba_info *info) {
-    char aux_name[255], old[255], type;
+    char aux_name[255], type;
     int i, j;
     moveThroughFat32(SEEK_SET, info->lba_adrr, BYTES_1, MAX_NUM_LIST, &type);
     //printf("LN--> %x\n", type & 0x40);
@@ -108,7 +108,7 @@ Lba_info recoveryLastTrace(Lba_info *trace, int *nTraces, Lba_info info) {
     return info;
 }
 
-char *getClusterContent(Lba_info info, int *size) {
+char *getClusterContent(Lba_info info, uint32_t *size) {
     char aux;
     char *content_file = NULL;
 
@@ -126,9 +126,8 @@ char *getClusterContent(Lba_info info, int *size) {
     return content_file;
 }
 
-void showContent(Lba_info info, char *argv, FileSystem fileSystem) {
-    char aux;
-    int size = 0;
+void showContent(Lba_info info, FileSystem fileSystem) {
+    uint32_t size = 0;
     char *content_file = NULL;
 
     info.i_cluster = getNextClusterAddr(info.lba_adrr);
@@ -151,7 +150,6 @@ void showContent(Lba_info info, char *argv, FileSystem fileSystem) {
 
 void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode) {
     char type;
-    int i;
     //printf("@@--> %x  ---  %x\n",info.lba_adrr,info.max_lba_adrr);
     if (info.lba_adrr != info.max_lba_adrr) {
         moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_11, MAX_NUM_LIST, info.dir.name);
@@ -223,7 +221,7 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
 
             //Nomes printem si no es ~ o espai entre el nom i extensio
             if (info.dir.name[6] != 0x7e && info.dir.name[6] != 0x20 /*&& info.dir.name[3] >= 90*/)
-                printf("\n\nDir name: %s\n", info.dir.name, info.lba_adrr);
+                printf("\n\nDir name: %s\n", info.dir.name);
 
         }
 
@@ -256,7 +254,7 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
                            info.dir.date.year);
                     break;
                 case 1://FASE 4 --> -show
-                    showContent(info, argv, fileSystem);
+                    showContent(info, fileSystem);
                     break;
                 case 2://FASE 5 --> -r
                     //TODO READ MODE
