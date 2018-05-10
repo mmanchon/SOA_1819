@@ -6,7 +6,7 @@
 
 int exisitsFile(char *path) {
     int fd;
-    if ((fd = open(path, O_RDONLY)) == -1) {
+    if ((fd = open(path, O_RDWR)) == -1) {
         printf("Error en obrir el fitxer %s\n", path);
         exit(1);
 

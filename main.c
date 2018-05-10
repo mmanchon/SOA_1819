@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
             }else{
                 printf(NOT_FOUND);
             }
-        } else if (memcmp(argv[1], "-search", sizeof(char) * strlen(argv[1])) == 0) {
+        } else if (strcmp(argv[1], "-search") == 0) {//if (memcmp(argv[1], "-search", sizeof(char) * strlen(argv[1])) == 0) {
 
             if (argc != 4) {
                 printf(ARGUMENTS_NUMBER);
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
                     printf(NOT_FOUND);
                 }
             }
-        }else if (memcmp(argv[1], "-show", sizeof(char) * strlen(argv[1])) == 0){
+        }else if (strcmp(argv[1], "-show") == 0){
 
             if(argc != 4){
                 printf(ARGUMENTS_NUMBER);
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
                     printf(NOT_FOUND);
                 }
             }
-        } else if (memcmp(argv[1], "-r", sizeof(char) * strlen(argv[1])) == 0){
+        } else if (strcmp(argv[1], "-r") == 0){
 
             if(argc != 4){
                 printf(ARGUMENTS_NUMBER);
@@ -80,12 +80,12 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
 
                 } else if (systemType == 2) {
-                    toggleReadModeFat32(fileSystem,argv[3]);
+                    activeReadModeFat32(fileSystem,argv[3]);
                 }else{
                     printf(NOT_FOUND);
                 }
             }
-        }else if (memcmp(argv[1], "-w", sizeof(char) * strlen(argv[1])) == 0){
+        }else if (strcmp(argv[1], "-w") == 0){
 
             if(argc != 4){
                 printf(ARGUMENTS_NUMBER);
@@ -97,12 +97,12 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
 
                 } else if (systemType == 2) {
-                    //activeReadModeFat32(fileSystem,argv[3]);
+                    activeWriteModeFat32(fileSystem,argv[3]);
                 }else{
                     printf(NOT_FOUND);
                 }
             }
-        }else if (memcmp(argv[1], "-h", sizeof(char) * strlen(argv[1])) == 0){
+        }else if (strcmp(argv[1], "-h") == 0){
 
             if(argc != 4){
                 printf(ARGUMENTS_NUMBER);
@@ -114,12 +114,12 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
 
                 } else if (systemType == 2) {
-                    //activeReadModeFat32(fileSystem,argv[3]);
+                    activeHideModeFat32(fileSystem,argv[3]);
                 }else{
                     printf(NOT_FOUND);
                 }
             }
-        }else if (memcmp(argv[1], "-s", sizeof(char) * strlen(argv[1])) == 0){
+        }else if (strcmp(argv[1], "-s") == 0){
 
             if(argc != 4){
                 printf(ARGUMENTS_NUMBER);
@@ -131,12 +131,12 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
 
                 } else if (systemType == 2) {
-                    //activeReadModeFat32(fileSystem,argv[3]);
+                    desactivateHideModeFat32(fileSystem,argv[3]);
                 }else{
                     printf(NOT_FOUND);
                 }
             }
-        }else if (memcmp(argv[1], "-d", sizeof(char) * strlen(argv[1])) == 0){
+        }else if (strcmp(argv[1], "-d") == 0){
 
             if(argc != 4){
                 printf(ARGUMENTS_NUMBER);

@@ -183,5 +183,8 @@ void getAddr(int mode,Lba_info *info,FileSystem fileSystem);
  */
 FileSystem showContentFileFat32(FileSystem fileSystem, char *argv);
 
-FileSystem toggleReadModeFat32(FileSystem fileSystem,char *argv);
+FileSystem activeReadModeFat32(FileSystem fileSystem,char *argv);
+FileSystem activeWriteModeFat32(FileSystem fileSystem,char *argv);
+FileSystem activeHideModeFat32(FileSystem fileSystem,char *argv);
+FileSystem desactivateHideModeFat32(FileSystem fileSystem,char *argv);
 #endif

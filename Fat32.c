@@ -260,16 +260,56 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
                     //TODO READ MODE
                     //OFFSET 11 1B
                     // READ_ONLY=0x01 HIDDEN=0x02 SYSTEM=0x04 VOLUME_ID=0x08 DIRECTORY=0x10 ARCHIVE=0x20 LFN=READ_ONLY|HIDDEN|SYSTEM|VOLUME_ID
-
+                    printf("OLD--> %x\n",info.dir.attributes);
                     if(!(info.dir.attributes & 0x01)){
                         info.dir.attributes = info.dir.attributes | 0x01;
-                    }else{
-                        info.dir.attributes = info.dir.attributes & 0xFE;
+                        //printf("OLD--> %x\n",info.dir.attributes);
                     }
-                    moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
-                    char aux2 = (char)info.dir.attributes;
-                    write(fd,&aux2,1);
 
+                    lseek(fd,info.lba_adrr + 0x0B,SEEK_SET);
+                    write(fd,&info.dir.attributes, sizeof(info.dir.attributes));
+                    //Comprovació que s'ha escrit correctament
+                    moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
+                    //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
+                    printf("NEW2--> %x\n",info.dir.attributes);
+                    break;
+                case 3:
+                    printf("OLD--> %x\n",info.dir.attributes);
+                    if((info.dir.attributes & 0x01)){
+                        info.dir.attributes = info.dir.attributes & 0xFE;
+                        //printf("NEW1--> %x\n",info.dir.attributes);
+                    }
+                    lseek(fd,info.lba_adrr + 0x0B,SEEK_SET);
+                    write(fd,&info.dir.attributes, sizeof(info.dir.attributes));
+                    //Comprovació que s'ha escrit correctament
+                    moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
+                    //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
+                    printf("NEW2--> %x\n",info.dir.attributes);
+                    break;
+                case 4:
+                    printf("OLD--> %x\n",info.dir.attributes);
+                    if((info.dir.attributes & 0x02)){
+                        info.dir.attributes = info.dir.attributes & 0xFD;
+                        //printf("NEW1--> %x\n",info.dir.attributes);
+                    }
+                    lseek(fd,info.lba_adrr + 0x0B,SEEK_SET);
+                    write(fd,&info.dir.attributes, sizeof(info.dir.attributes));
+                    //Comprovació que s'ha escrit correctament
+                    moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
+                    //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
+                    printf("NEW2--> %x\n",info.dir.attributes);
+                    break;
+                case 5:
+                    printf("OLD--> %x\n",info.dir.attributes);
+                    if(!(info.dir.attributes & 0x02)){
+                        info.dir.attributes = info.dir.attributes | 0x02;
+                    }
+                    lseek(fd,info.lba_adrr + 0x0B,SEEK_SET);
+                    write(fd,&info.dir.attributes, sizeof(info.dir.attributes));
+                    //Comprovació que s'ha escrit correctament
+                    moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
+                    //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
+                    printf("NEW2--> %x\n",info.dir.attributes);
                     break;
             }
 
@@ -346,7 +386,7 @@ FileSystem initSearchInfoFat32(FileSystem fileSystem) {
     return fileSystem;
 }
 
-FileSystem toggleReadModeFat32(FileSystem fileSystem,char *argv){
+FileSystem activeReadModeFat32(FileSystem fileSystem,char *argv){
     Lba_info info;
     Lba_info *trace;
     int nTraces;
@@ -364,7 +404,77 @@ FileSystem toggleReadModeFat32(FileSystem fileSystem,char *argv){
     getAddr(1, &info, fileSystem);
     info.max_lba_adrr = info.lba_adrr + 512;
     //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, fileSystem, trace, &nTraces, 0);
+    goTroughFS(info, argv, fileSystem, trace, &nTraces, 2);
+    return fileSystem;
+
+}
+
+FileSystem activeWriteModeFat32(FileSystem fileSystem,char *argv){
+    Lba_info info;
+    Lba_info *trace;
+    int nTraces;
+
+    fileSystem = getInfoFat32(fileSystem);
+
+    //Inicialitzem les @
+    info.i_cluster = fileSystem.fat32.rootCluster;
+    info.init_cluster = info.i_cluster;
+
+    nTraces = 0;
+    trace = NULL;
+
+    getAddr(0, &info, fileSystem);
+    getAddr(1, &info, fileSystem);
+    info.max_lba_adrr = info.lba_adrr + 512;
+    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
+    goTroughFS(info, argv, fileSystem, trace, &nTraces, 3);
+    return fileSystem;
+
+}
+
+FileSystem activeHideModeFat32(FileSystem fileSystem,char *argv){
+    Lba_info info;
+    Lba_info *trace;
+    int nTraces;
+
+    fileSystem = getInfoFat32(fileSystem);
+
+    //Inicialitzem les @
+    info.i_cluster = fileSystem.fat32.rootCluster;
+    info.init_cluster = info.i_cluster;
+
+    nTraces = 0;
+    trace = NULL;
+
+    getAddr(0, &info, fileSystem);
+    getAddr(1, &info, fileSystem);
+    info.max_lba_adrr = info.lba_adrr + 512;
+    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
+    goTroughFS(info, argv, fileSystem, trace, &nTraces, 4);
+    return fileSystem;
+
+}
+
+
+FileSystem desactivateHideModeFat32(FileSystem fileSystem,char *argv){
+    Lba_info info;
+    Lba_info *trace;
+    int nTraces;
+
+    fileSystem = getInfoFat32(fileSystem);
+
+    //Inicialitzem les @
+    info.i_cluster = fileSystem.fat32.rootCluster;
+    info.init_cluster = info.i_cluster;
+
+    nTraces = 0;
+    trace = NULL;
+
+    getAddr(0, &info, fileSystem);
+    getAddr(1, &info, fileSystem);
+    info.max_lba_adrr = info.lba_adrr + 512;
+    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
+    goTroughFS(info, argv, fileSystem, trace, &nTraces, 5);
     return fileSystem;
 
 }
