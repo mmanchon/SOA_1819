@@ -262,6 +262,16 @@ void goTroughFS(Lba_info info, char *argv, FileSystem fileSystem, Lba_info *trac
                     //TODO READ MODE
                     //OFFSET 11 1B
                     // READ_ONLY=0x01 HIDDEN=0x02 SYSTEM=0x04 VOLUME_ID=0x08 DIRECTORY=0x10 ARCHIVE=0x20 LFN=READ_ONLY|HIDDEN|SYSTEM|VOLUME_ID
+
+                    if(!(info.dir.attributes & 0x01)){
+                        info.dir.attributes = info.dir.attributes | 0x01;
+                    }else{
+                        info.dir.attributes = info.dir.attributes & 0xFE;
+                    }
+                    moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
+                    char aux2 = (char)info.dir.attributes;
+                    write(fd,&aux2,1);
+
                     break;
             }
 
@@ -436,16 +446,19 @@ int checkIfFat32(int file) {
     //printf("BUFFER: -%s-\n", aux);
     if (strcmp(aux, "FAT32   ") == 0) {
         return 1;
-    } else if (strcmp(aux, "FAT12   ") == 0) {
-        printf(NOT_RECOGNIZED, "FAT12");
-        exit(1);
-    } else if (strcmp(aux, "FAT16   ") == 0) {
-        printf(NOT_RECOGNIZED, "FAT16");
-        exit(1);
-    } else {
-        printf(NOT_FOUND);
-        return 0;
+    } else{
+        moveThroughFat32(SEEK_SET, OFF_FAT_TYPE_2, BYTES_8, 1, aux);
+        if (strcmp(aux, "FAT12   ") == 0) {
+            printf(NOT_RECOGNIZED, "FAT12");
+            exit(1);
+        } else if (strcmp(aux, "FAT16   ") == 0) {
+            printf(NOT_RECOGNIZED, "FAT16");
+            exit(1);
+        } else {
+            printf(NOT_FOUND);
+            return 0;
 
+        }
     }
 
 }

@@ -38,6 +38,7 @@
 #define OFF_SECTOR_FAT 0x24
 #define OFF_LABEL 0x47
 #define OFF_FAT_TYPE 0x52
+#define OFF_FAT_TYPE_2 0x36
 
 #define OFF_ROOT_DIR 0x2C
 
