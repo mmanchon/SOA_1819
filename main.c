@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 
     } else {
 
-        if (memcmp(argv[1], "-info", sizeof(char) * strlen(argv[1])) == 0) {
+        if (strcmp(argv[1], "-info") == 0) {
             fd = exisitsFile(argv[2]);
             systemType = detectFileSystemType(fd);
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
             }else{
                 printf(NOT_FOUND);
             }
-        } else if (strcmp(argv[1], "-search") == 0) {//if (memcmp(argv[1], "-search", sizeof(char) * strlen(argv[1])) == 0) {
+        } else if (strcmp(argv[1], "-search") == 0) {
 
             if (argc != 4) {
                 printf(ARGUMENTS_NUMBER);
@@ -81,6 +81,9 @@ int main(int argc, char **argv) {
                 systemType = detectFileSystemType(fd);
 
                 if (systemType == 1) {
+                    fileInode = searchFileExt4(argv[3], &ext4);
+
+                    if(fileInode != 0)activateReadMode(fileInode,ext4);
 
                 } else if (systemType == 2) {
                     activeReadModeFat32(fileSystem,argv[3]);
@@ -98,6 +101,9 @@ int main(int argc, char **argv) {
                 systemType = detectFileSystemType(fd);
 
                 if (systemType == 1) {
+                    fileInode = searchFileExt4(argv[3], &ext4);
+
+                    if(fileInode != 0)activateReadMode(fileInode,ext4);
 
                 } else if (systemType == 2) {
                     activeWriteModeFat32(fileSystem,argv[3]);
@@ -150,6 +156,11 @@ int main(int argc, char **argv) {
 
                 if (systemType == 1) {
 
+                    fileInode = searchFileExt4(argv[4], &ext4);
+
+                    uint32_t date = (uint32_t) argv[3];
+
+                    if(fileInode != 0)changeDateFile(fileInode,ext4, date);
                 } else if (systemType == 2) {
                     //activeReadModeFat32(fileSystem,argv[3]);
                 }else{

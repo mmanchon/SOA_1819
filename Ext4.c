@@ -447,7 +447,7 @@ uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead){
     return showInfoFile(ext4.blockAddress * ext4.blockSize, ee_len, ext4, numRead);
 }
 
-int internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4){
+void internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4){
     uint16_t upperExtentTree;
     uint32_t lowerExtentTree;
     uint64_t extentTree;
@@ -475,4 +475,39 @@ uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uin
     }
     printf("\n");
     return i;
+}
+
+void activateReadMode(uint64_t offset, DeepSearchExt4 ext4){
+    uint16_t mode;
+
+    moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
+
+    printf("MODE: %"PRIu16"\n", mode);
+
+    lseek(fd, -sizeof(uint16_t), SEEK_CUR);
+
+    mode = mode & 0x7FF24; // 111 1111 1111 0010 0100
+
+    write(fd, &mode, sizeof(mode));
+
+}
+
+void deactivateReadMode(uint64_t offset, DeepSearchExt4 ext4){
+    uint16_t mode;
+
+    moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
+
+    printf("MODE: %"PRIu16"\n", mode);
+
+    lseek(fd, -sizeof(uint16_t), SEEK_CUR);
+
+    mode = mode & 0x7FFB6; // 111 1111 1111 1011 0110
+
+    write(fd, &mode, sizeof(mode));
+
+}
+
+void changeDateFile(uint64_t offset, DeepSearchExt4 ext4, uint32_t date){
+    lseek(fd, offset + 0x90, SEEK_SET);
+    fwrite(fd, date, sizeof(date));
 }

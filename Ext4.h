@@ -116,12 +116,16 @@ void findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4);
 
 uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead);
 
-int internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4);
+void internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4);
 
 uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uint64_t numRead);
 
 //Funciones fase 5
 
+void activateReadMode(uint64_t offset, DeepSearchExt4 ext4);
 
+void deactivateReadMode(uint64_t offset, DeepSearchExt4 ext4);
+
+void changeDateFile(uint64_t offset, DeepSearchExt4 ext4, uint32_t date);
 
 #endif //RAGNAROK_EXT4_H
