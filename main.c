@@ -12,7 +12,8 @@ int main(int argc, char **argv) {
     int fd = 0;
     int systemType = 0;
     FileSystem fileSystem;
-    //Dir_info dir;
+    uint64_t fileInode;
+    DeepSearchExt4 ext4;
 
     if (!argc) {
         printf(ARGUMENTS_NUMBER);
@@ -42,7 +43,7 @@ int main(int argc, char **argv) {
                 systemType = detectFileSystemType(fd);
 
                 if (systemType == 1) {
-                    searchFileExt4(argv[3]);
+                    searchFileExt4(argv[3], &ext4);
 
                 } else if (systemType == 2) {
                     fileSystem = searchFileFat32(fileSystem, argv[3]);
@@ -60,7 +61,9 @@ int main(int argc, char **argv) {
                 systemType = detectFileSystemType(fd);
 
                 if (systemType == 1) {
-                    searchFileExt4(argv[3]);
+                    fileInode = searchFileExt4(argv[3], &ext4);
+
+                    if(fileInode != 0)findFileInfo(fileInode,ext4);
 
                 } else if (systemType == 2) {
                     showContentFileFat32(fileSystem,argv[3]);

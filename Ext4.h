@@ -79,6 +79,9 @@ int fd;
  * Función para mostrar la información de la Fase1
  * @param ext4 Tipo que contiene la información
  */
+
+//Funciones necesarias para la fase 1
+
 void showInfoExt4(VolumenExt4 ext4);
 
 FileSystem initSearchInfoExt4(FileSystem fileSystem);
@@ -87,7 +90,9 @@ void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
 int checkIfExt4(int file);
 
-void searchFileExt4(char *file);
+//Funciones necesarias para la fase2/3
+
+uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4);
 
 uint64_t searchExtentTree(DeepSearchExt4 ext4);
 
@@ -102,4 +107,21 @@ uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4);
 uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 ext4, char *name);
 
 char *getTime(uint32_t time);
+
+//Funciones necesarias para la fase 4
+
+void findFileInfo(uint64_t fileInode, DeepSearchExt4 ext4);
+
+void findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4);
+
+uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead);
+
+int internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4);
+
+uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uint64_t numRead);
+
+//Funciones fase 5
+
+
+
 #endif //RAGNAROK_EXT4_H

@@ -152,31 +152,30 @@ int checkIfExt4(int file) {
 }
 
 
-void searchFileExt4(char *file) {
+uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4) {
     uint32_t lowerInodeTable, upperInodeTable, felx_bg;
     uint64_t inodeTable,fileInode = 0;
-    DeepSearchExt4 ext4;
 
     //guardamos el nombre del fichero en el typedef
-    ext4.file = file;
+    ext4->file = file;
 
     //Con las siguientes funciones rellenamos la variable DeepSearchExt4 para
     //tener la información necesaria y hacer recursividad
-    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x18, BYTES_4, MAX_NUM_LIST, &ext4.blockSize);
-    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x28, BYTES_4, MAX_NUM_LIST, &ext4.inodesPerGroup);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x18, BYTES_4, MAX_NUM_LIST, &(ext4->blockSize));
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x28, BYTES_4, MAX_NUM_LIST, &(ext4->inodesPerGroup));
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x60, BYTES_4, MAX_NUM_LIST, &felx_bg);
-    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x58, BYTES_2, MAX_NUM_LIST, &ext4.inodeSize);
-    ext4.blockSize = pow(2, (10 + ext4.blockSize));
-    moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_BLOCKGROUP_SIZE, BYTES_2, 1, &ext4.blockGroupSize);
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x58, BYTES_2, MAX_NUM_LIST, &(ext4->inodeSize));
+    ext4->blockSize = pow(2, (10 + ext4->blockSize));
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_BLOCKGROUP_SIZE, BYTES_2, 1, &(ext4->blockGroupSize));
 
     //leemos la posicion de la tabla de inodos
-    if(ext4.blockSize == 1024){
+    if(ext4->blockSize == 1024){
         moveThroughExt4(SEEK_SET, PADDING_BLOCKGROUP_DESCRIPTORS + 0x28, BYTES_4, 1, &upperInodeTable);
         moveThroughExt4(SEEK_SET, PADDING_BLOCKGROUP_DESCRIPTORS + 0x8, BYTES_4, 1, &lowerInodeTable);
 
     }else{
-        moveThroughExt4(SEEK_SET, ext4.blockSize + 0x28, BYTES_4, 1, &upperInodeTable);
-        moveThroughExt4(SEEK_SET, ext4.blockSize + 0x8, BYTES_4, 1, &lowerInodeTable);
+        moveThroughExt4(SEEK_SET, ext4->blockSize + 0x28, BYTES_4, 1, &upperInodeTable);
+        moveThroughExt4(SEEK_SET, ext4->blockSize + 0x8, BYTES_4, 1, &lowerInodeTable);
 
     }
 
@@ -195,16 +194,18 @@ void searchFileExt4(char *file) {
     printf("BLOCKSIZE: -%"PRIu32"-\n", ext4.blockSize);
     printf("FLEX BG: -%"PRIu32"-\n", (felx_bg & 0x200));*/
    //El inicio de la tabla de inodos se encuentra en la posicion leida por el tamaño de bloque
-    ext4.initInodeTable = ext4.blockSize * inodeTable;
+    ext4->initInodeTable = ext4->blockSize * inodeTable;
 
     //Buscamos el inicio del extent tree
-    fileInode = searchExtentTree(ext4);
+    fileInode = searchExtentTree(*ext4);
     if(fileInode == 0){
         printf(FILE_NOT_FOUND);
     }else{
         printf("FILE INODE FINAL%"PRIu64"\n",fileInode);
 
     }
+
+    return fileInode;
 }
 
 uint64_t searchExtentTree(DeepSearchExt4 ext4) {
@@ -377,18 +378,101 @@ uint64_t checkFile(ext4_dir_entry_2 dir, DeepSearchExt4 ext4, char *name) {
                             BYTES_4,
                             1,
                             &upperFileSize);
-
             fileSize = upperFileSize;
           //  printf("UPPER FILE SIZE: %"PRIu32"\n", upperFileSize);
            // printf("LOWER FILE SIZE: %"PRIu32"\n",lowerFileSize);
+
             fileSize = fileSize << 32;
             fileSize = fileSize | lowerFileSize;
 
-            printf("ENCONTRADO! %"PRIu64"\n",ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize);
+           // printf("ENCONTRADO! %"PRIu64"\n",ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize);
             printf(FILE_FOUND,fileSize,getTime(date));
             return ext4.initInodeTable + ((dir.inode - 1) % ext4.inodesPerGroup) * ext4.inodeSize;
         }
     }
 
     return 0;
+}
+
+
+void findFileInfo(uint64_t fileInode, DeepSearchExt4 ext4){
+    uint32_t lowerFileFize, upperFileSize;
+
+    moveThroughExt4(SEEK_SET,fileInode + 0x4, BYTES_4,1,&lowerFileFize);
+    moveThroughExt4(SEEK_SET,fileInode + 0x6C, BYTES_4,1,&upperFileSize);
+
+    ext4.fileSize = upperFileSize;
+    ext4.fileSize = ext4.fileSize << 32;
+    ext4.fileSize = ext4.fileSize | lowerFileFize;
+    findExtentTreeInfo(fileInode+0x28,ext4);
+}
+
+void findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4){
+    uint16_t numEntries;
+    uint16_t depthExtentTree;
+    int i = 0;
+    uint64_t numRead = 0;
+
+    //leemos la informacion del numero de entradas validas y el depth del extent tree
+    moveThroughExt4(SEEK_SET, offset + 0x2, BYTES_2, 1, &numEntries);
+    moveThroughExt4(SEEK_SET, offset + 0x6, BYTES_2, 1, &depthExtentTree);
+
+    if (depthExtentTree == 0) {
+        //en caso que el depth sea igual a 0 entonces es hoja, se mira por cada una de las hojas
+
+        for (i = 0; i < numEntries; i++) {
+            numRead = fileLeaf(offset + 0xC * (i + 1), ext4, numRead);
+        }
+    } else {
+        //en caso de que sea diferente a 0 tenemos un extent tree
+        for (i = 0; i < numEntries; i++) {
+           internalFileNodes(offset + 0xC * (i + 1), ext4);
+        }
+    }
+}
+
+uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead){
+    uint16_t upperBlockNumber;
+    uint32_t lowerBlockNumber;
+    uint16_t ee_len;
+
+    moveThroughExt4(SEEK_SET, initLeaf + 0x4, BYTES_2, 1, &ee_len);
+    moveThroughExt4(SEEK_CUR, 0, BYTES_2, 1, &upperBlockNumber);
+    moveThroughExt4(SEEK_CUR, 0, BYTES_4, 1, &lowerBlockNumber);
+
+    ext4.blockAddress = upperBlockNumber;
+    ext4.blockAddress = ext4.blockAddress << 32;
+    ext4.blockAddress = ext4.blockAddress | lowerBlockNumber;
+
+    return showInfoFile(ext4.blockAddress * ext4.blockSize, ee_len, ext4, numRead);
+}
+
+int internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4){
+    uint16_t upperExtentTree;
+    uint32_t lowerExtentTree;
+    uint64_t extentTree;
+
+    moveThroughExt4(SEEK_SET, initNode + 0x4, BYTES_4, 1, &lowerExtentTree);
+    moveThroughExt4(SEEK_CUR, 0, BYTES_2, 1, &upperExtentTree);
+
+    extentTree = upperExtentTree;
+    extentTree = extentTree << 32;
+    extentTree = extentTree | lowerExtentTree;
+
+    findExtentTreeInfo(extentTree*ext4.blockSize,ext4);
+}
+
+
+uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uint64_t numRead){
+    uint64_t i = numRead;
+    char c;
+
+    lseek(fd,offset,SEEK_SET);
+    while( (i < (ee_len * ext4.blockSize)) && (i < ext4.fileSize) ){
+        read(fd, &c, sizeof(char));
+        printf("%c",c);
+        i++;
+    }
+    printf("\n");
+    return i;
 }

@@ -112,6 +112,7 @@ typedef struct{
     char *file;
     uint64_t blockAddress;
     uint64_t initInodeFile;
+    uint64_t fileSize;
 }DeepSearchExt4;
 
 #endif //RAGNAROK_TYPES_H
