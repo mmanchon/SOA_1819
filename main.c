@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
                     fileInode = searchFileExt4(argv[3], &ext4);
 
-                    if(fileInode != 0)activateReadMode(fileInode,ext4);
+                    if(fileInode != 0)activateReadMode(fileInode);
 
                 } else if (systemType == 2) {
                     activeReadModeFat32(fileSystem,argv[3]);
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
                 if (systemType == 1) {
                     fileInode = searchFileExt4(argv[3], &ext4);
 
-                    if(fileInode != 0)activateReadMode(fileInode,ext4);
+                    if(fileInode != 0)activateReadMode(fileInode);
 
                 } else if (systemType == 2) {
                     activeWriteModeFat32(fileSystem,argv[3]);
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 
                     uint32_t date = (uint32_t) argv[3];
 
-                    if(fileInode != 0)changeDateFile(fileInode,ext4, date);
+                    if(fileInode != 0)changeDateFile(fileInode, date);
                 } else if (systemType == 2) {
                     //activeReadModeFat32(fileSystem,argv[3]);
                 }else{

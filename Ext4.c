@@ -330,12 +330,13 @@ uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSear
     if (dir.inode != 0 && ((ee_len * ext4.blockSize)+(ext4.blockSize*ext4.blockAddress)) > (adress) ) {
 
 
-      /* printf("ADRESS: %"PRIu64"\n", adress);
+     /*  printf("ADRESS: %"PRIu64"\n", adress);
      printf("DIR LENGTH %"PRIu16"\n",dir.rec_len);
         printf("LENGTH: %"PRIu8"\n",dir.name_len);
         printf("TYPE: %"PRIu8"\n",dir.file_type);
-        printf("EELEN: %"PRIu16"\n",ee_len);*/
-        name = malloc(sizeof(char)*dir.name_len);
+        printf("EELEN: %"PRIu16"\n",ee_len);
+*/
+        name = calloc(dir.name_len, sizeof(char));
         read(fd, name, sizeof(char) * dir.name_len);
         //  printf("NAME %s\n", name);
 
@@ -477,7 +478,22 @@ uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uin
     return i;
 }
 
-void activateReadMode(uint64_t offset, DeepSearchExt4 ext4){
+void activateReadMode(uint64_t offset){
+    uint16_t mode;
+
+    moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
+
+    printf("MODE: %"PRIu16"\n", mode);
+
+    lseek(fd, offset, SEEK_SET);
+
+    mode = mode & 0xFF24; // 111 1111 1111 0010 0100
+
+    write(fd, &mode, sizeof(mode));
+
+}
+
+void deactivateReadMode(uint64_t offset){
     uint16_t mode;
 
     moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
@@ -486,28 +502,13 @@ void activateReadMode(uint64_t offset, DeepSearchExt4 ext4){
 
     lseek(fd, -sizeof(uint16_t), SEEK_CUR);
 
-    mode = mode & 0x7FF24; // 111 1111 1111 0010 0100
+    mode = mode & 0xFFB6; // 111 1111 1111 1011 0110
 
     write(fd, &mode, sizeof(mode));
 
 }
 
-void deactivateReadMode(uint64_t offset, DeepSearchExt4 ext4){
-    uint16_t mode;
-
-    moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
-
-    printf("MODE: %"PRIu16"\n", mode);
-
-    lseek(fd, -sizeof(uint16_t), SEEK_CUR);
-
-    mode = mode & 0x7FFB6; // 111 1111 1111 1011 0110
-
-    write(fd, &mode, sizeof(mode));
-
-}
-
-void changeDateFile(uint64_t offset, DeepSearchExt4 ext4, uint32_t date){
+void changeDateFile(uint64_t offset, uint32_t date){
     lseek(fd, offset + 0x90, SEEK_SET);
-    fwrite(fd, date, sizeof(date));
+    write(fd, &date, sizeof(date));
 }

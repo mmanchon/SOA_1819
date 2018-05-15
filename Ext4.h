@@ -122,10 +122,10 @@ uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uin
 
 //Funciones fase 5
 
-void activateReadMode(uint64_t offset, DeepSearchExt4 ext4);
+void activateReadMode(uint64_t offset);
 
-void deactivateReadMode(uint64_t offset, DeepSearchExt4 ext4);
+void deactivateReadMode(uint64_t offset);
 
-void changeDateFile(uint64_t offset, DeepSearchExt4 ext4, uint32_t date);
+void changeDateFile(uint64_t offset, uint32_t date);
 
 #endif //RAGNAROK_EXT4_H
