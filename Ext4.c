@@ -200,10 +200,10 @@ uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4) {
     fileInode = searchExtentTree(*ext4);
     if(fileInode == 0){
         printf(FILE_NOT_FOUND);
-    }else{
+    }/*else{
         printf("FILE INODE FINAL%"PRIu64"\n",fileInode);
 
-    }
+    }*/
 
     return fileInode;
 }
@@ -222,12 +222,13 @@ uint64_t searchExtentTree(DeepSearchExt4 ext4) {
     lseek(fd, ext4.initInodeTable + offset + OFF_EXTENT_TREE, SEEK_SET);
     read(fd, &magicNumber, sizeof(magicNumber));
 
-   // printf("------------ SEARCH EXTENT TREE ------------\n");
+  //  printf("------------ SEARCH EXTENT TREE ------------\n");
     //leemos el flag necesario para la fase 4
     lseek(fd, ext4.initInodeTable + 0x20 + offset, SEEK_SET);
     read(fd, &aux, sizeof(aux));
    /* printf("FLAG: %"PRIu32"\n",(aux&0x80000));
     printf("MAGIC NUMBER %x\n", magicNumber);*/
+
     //Magic number para saber si es extent tree
     if (magicNumber == 0xF30A) {
         //vamos a ver la información del extent tree
@@ -248,11 +249,11 @@ uint64_t searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4) {
     moveThroughExt4(SEEK_SET, initExtentTree + 0x2, BYTES_2, 1, &numEntries);
     moveThroughExt4(SEEK_SET, initExtentTree + 0x6, BYTES_2, 1, &depthExtentTree);
 
-    /* printf("---------------SEARCH INFO EXTENT ------------\n");
-      printf("INIT EXTENT TREE: %"PRIu64"\n", initExtentTree);
-      printf("DEPTH: %"PRIu16"\n",depthExtentTree);
-      printf("NUM ENTRIES: %"PRIu16"\n",numEntries);
-*/
+     /*printf("---------------SEARCH INFO EXTENT ------------\n");
+     printf("INIT EXTENT TREE: %"PRIu64"\n", initExtentTree);
+     printf("DEPTH: %"PRIu16"\n",depthExtentTree);
+     printf("NUM ENTRIES: %"PRIu16"\n",numEntries);*/
+
     if (depthExtentTree == 0) {
     //en caso que el depth sea igual a 0 entonces es hoja, se mira por cada una de las hojas
         for (i = 0; i < numEntries; i++) {
@@ -306,7 +307,7 @@ uint64_t infoLeaf(uint64_t initLeaf, DeepSearchExt4 ext4) {
 
     /* printf("------------INFO LEAF ---------------------\n");
      printf("INIT LEAF: %"PRIu64"\n", initLeaf);
-     printf("BLOCK ADRESS: %"PRIu64"\n", blockAddress);
+     printf("BLOCK ADRESS: %"PRIu64"\n", ext4.blockAddress);
      printf("BLOCK SIZE: -%"PRIu32"-\n", ext4.blockSize);*/
 
     fileInode = readDirectoryInfo(ext4.blockAddress * ext4.blockSize, 0, ee_len, ext4);
@@ -322,23 +323,21 @@ uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSear
     lseek(fd, adress, SEEK_SET);
     read(fd, &dir, sizeof(dir));
 
-    /*printf("------------READ DIRECTORY ENTRY ---------------------\n");
+   /* printf("------------READ DIRECTORY ENTRY ---------------------\n");
     printf("INODE: %"PRIu32"\n",dir.inode-1);
     printf("ADRESS: %"PRIu64"\n",adress);
-    printf("LIMIT: %"PRIu64"\n",(ee_len * ext4.blockSize)+(ext4.blockSize*ext4.blockAddress));
-*/
+    printf("LIMIT: %"PRIu64"\n",(ee_len * ext4.blockSize)+(ext4.blockSize*ext4.blockAddress));*/
+
     if (dir.inode != 0 && ((ee_len * ext4.blockSize)+(ext4.blockSize*ext4.blockAddress)) > (adress) ) {
 
-
-     /*  printf("ADRESS: %"PRIu64"\n", adress);
-     printf("DIR LENGTH %"PRIu16"\n",dir.rec_len);
+       /* printf("DIR LENGTH %"PRIu16"\n",dir.rec_len);
         printf("LENGTH: %"PRIu8"\n",dir.name_len);
         printf("TYPE: %"PRIu8"\n",dir.file_type);
         printf("EELEN: %"PRIu16"\n",ee_len);
 */
         name = calloc(dir.name_len, sizeof(char));
         read(fd, name, sizeof(char) * dir.name_len);
-        //  printf("NAME %s\n", name);
+       //   printf("NAME %s\n", name);
 
         if ((dir.file_type & 0x2) > 0 && memcmp(name, ".", sizeof(char)) != 0 && memcmp(name, "..", sizeof(char) * 2) != 0) {
 
@@ -483,7 +482,7 @@ void activateReadMode(uint64_t offset){
 
     moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
 
-    printf("MODE: %"PRIu16"\n", mode);
+   // printf("MODE: %"PRIu16"\n", mode);
 
     lseek(fd, offset, SEEK_SET);
 
@@ -498,7 +497,7 @@ void deactivateReadMode(uint64_t offset){
 
     moveThroughExt4(SEEK_SET, offset, BYTES_2, 1, &mode);
 
-    printf("MODE: %"PRIu16"\n", mode);
+   // printf("MODE: %"PRIu16"\n", mode);
 
     lseek(fd, -sizeof(uint16_t), SEEK_CUR);
 
