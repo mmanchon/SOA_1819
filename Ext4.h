@@ -1,7 +1,3 @@
-//
-// Created by sergi on 14/4/18.
-//
-
 
 #ifndef RAGNAROK_EXT4_H
 #define RAGNAROK_EXT4_H
@@ -28,15 +24,18 @@
  * Mensajes para EXT4
  * INODE INFO
  * */
+
 #define INODE_INFO "INODE INFO\n"
 #define INODE_SIZE "Inode Size: %d\n"
 #define NUMBER_INODES "Number of Inodes: %d\n"
 #define FIRST_INODE "First Inode: %d\n"
 #define INODES_GROUP "Inodes Group: %d\n"
 #define FREE_INODES "Free Inodes: %d\n\n"
+
 /**
  * BLOCK INFO
  * */
+
 #define BLOCK_INFO "BLOCK INFO\n"
 #define BLOCK_SIZE "Block Size: %.2f\n"
 #define RESERVED_BLOCK "Reserved Blocks: %d\n"
@@ -45,20 +44,22 @@
 #define FIRST_BLOCK "First Block: %d\n"
 #define BLOCK_GROUP "Block Group: %d\n"
 #define FRAGS_GROUP "Frags Group: %d\n\n"
+
 /**
  * VOLUME INFO
  * */
+
 #define VOLUME_INFO "VOLUME INFO\n"
 #define VOLUME_NAME "Volume name: %s\n"
 #define LAST_CHECK_VOL "Last check: %s"
 #define LAST_MOUNT_VOL "Last mount: %s"
 #define LAST_WRITTEN "Last written: %s"
 
-
 /**
  * IMPORTANT OFFSETS
  */
-#define OFF_FIRST_INODE 0x54
+
+ #define OFF_FIRST_INODE 0x54
 #define OFF_VOLUME_NAME 0x78
 #define OFF_FEATURE_COMPAT 0x5C
 #define OFF_FEATURE_INCOMPAT 0x60
@@ -71,61 +72,172 @@
 /**
  * PADDINGS
  * */
+
 #define PADDING_BLOCKGROUP_DESCRIPTORS 2048
 #define PADDING_GROUP_DESCRIPTORS 64
 
 int fd;
+
+
+//Funciones necesarias para la fase 1
 /**
  * Función para mostrar la información de la Fase1
  * @param ext4 Tipo que contiene la información
  */
-
-//Funciones necesarias para la fase 1
-
 void showInfoExt4(VolumenExt4 ext4);
 
+/**
+ *
+ * @param fileSystem
+ * @return
+ */
 FileSystem initSearchInfoExt4(FileSystem fileSystem);
 
+/**
+ *
+ * @param whence
+ * @param offset
+ * @param bytes
+ * @param numArg
+ * @param ...
+ */
 void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
+/**
+ *
+ * @param file
+ * @return
+ */
 int checkIfExt4(int file);
 
 //Funciones necesarias para la fase2/3
 
+/**
+ *
+ * @param file
+ * @param ext4
+ * @return
+ */
 uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4);
 
-uint64_t searchExtentTree(DeepSearchExt4 ext4);
+/**
+ *
+ * @param ext4
+ * @return
+ */
+uint64_t searchExtentTree(DeepSearchExt4 *ext4);
 
-uint64_t searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 ext4);
+/**
+ *
+ * @param initExtentTree
+ * @param ext4
+ * @return
+ */
+uint64_t searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 *ext4);
 
-uint64_t infoLeaf(uint64_t initLeaf,DeepSearchExt4 ext4);
+/**
+ *
+ * @param initLeaf
+ * @param ext4
+ * @return
+ */
+uint64_t infoLeaf(uint64_t initLeaf,DeepSearchExt4 *ext4);
 
-uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 ext4);
+/**
+ *
+ * @param adress
+ * @param index
+ * @param ee_len
+ * @param ext4
+ * @return
+ */
+uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 *ext4);
 
-uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 ext4);
+/**
+ *
+ * @param initNode
+ * @param ext4
+ * @return
+ */
+uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 *ext4);
 
-uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 ext4, char *name);
+/**
+ *
+ * @param dir
+ * @param ext4
+ * @param name
+ * @return
+ */
+uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 *ext4, char *name);
 
-char *getTime(uint32_t time);
+/**
+ *
+ * @param time
+ * @return
+ */
+struct tm* getTime(uint32_t time);
 
 //Funciones necesarias para la fase 4
 
+/**
+ *
+ * @param fileInode
+ * @param ext4
+ */
 void findFileInfo(uint64_t fileInode, DeepSearchExt4 ext4);
 
+/**
+ *
+ * @param offset
+ * @param ext4
+ */
 void findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4);
 
+/**
+ *
+ * @param initLeaf
+ * @param ext4
+ * @param numRead
+ * @return
+ */
 uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead);
 
+/**
+ *
+ * @param initNode
+ * @param ext4
+ */
 void internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4);
 
+/**
+ *
+ * @param offset
+ * @param ee_len
+ * @param ext4
+ * @param numRead
+ * @return
+ */
 uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uint64_t numRead);
 
 //Funciones fase 5
 
+/**
+ *
+ * @param offset
+ */
 void activateReadMode(uint64_t offset);
 
+/**
+ *
+ * @param offset
+ */
 void deactivateReadMode(uint64_t offset);
 
-void changeDateFile(uint64_t offset, uint32_t date);
+/**
+ *
+ * @param offset
+ * @param date
+ */
+void changeDateFile(uint64_t offset, char* date);
 
 #endif //RAGNAROK_EXT4_H

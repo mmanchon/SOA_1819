@@ -1,7 +1,3 @@
-//
-// Created by sergi on 13/4/18.
-//
-
 #ifndef RAGNAROK_TYPES_H
 #define RAGNAROK_TYPES_H
 
@@ -31,7 +27,21 @@
  * */
 #define FILE_NOT_FOUND "Error. File not found.\n"
 #define ARGUMENTS_NUMBER "Error.Incorrect parameter number.\n"
-#define FILE_FOUND "File found! Size: %"PRIu64" bytes.  Created on: %s.\n"
+#define FILE_FOUND "File found! Size: %"PRIu64" bytes.  Created on: %d/%d/%d.\n"
+
+/**
+ * FASE 4 MESSAGES
+ */
+
+#define SHOWING_CONTENT "File found! Showing content...\n"
+
+/**
+ * FASE 5 MESSAGES
+ */
+
+#define CHANGE_RWX "Se han editado los permisos de %s\n"
+#define CHANGE_DATE "Se han editado las fechas de %s\n"
+#define NOT_ALLOWED "Operacion no valida para Ext4\n"
 
 /**
  * NUMBER OF BYTES WE READ
@@ -113,6 +123,7 @@ typedef struct{
     uint64_t blockAddress;
     uint64_t initInodeFile;
     uint64_t fileSize;
+    uint32_t dateFile;
 }DeepSearchExt4;
 
 #endif //RAGNAROK_TYPES_H
