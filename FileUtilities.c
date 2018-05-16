@@ -6,6 +6,7 @@ int checkFileSystem(char *volume){
     int fd = 0;
 
     fd = exisitsFile(volume);
+
     return detectFileSystemType(fd);
 }
 
@@ -28,13 +29,18 @@ int detectFileSystemType(int fd) {
 
     uint16_t buffer;
 
+    //Comprovamos si nos podemos mover hasta la posicion deseada
     if (!(lseek(fd, PADDING_EXT4 + OFFSET_MAGICNUMBER, SEEK_SET) < 0)) {
 
+        //leemos el file magic number
         if (!(read(fd, &buffer, sizeof(uint16_t)) <= 0)) {
 
+            //en caso de haber magic numbre estamos en un FS de tipo EXT
             if (buffer == MAGIC_NUMBER_EXT4) {
+                //miramos que ext es
                 checkIfExt4(fd);
                 return 1;
+                //miramos si es FAT32
             } else if (checkIfFat32(fd)) {
                 return 2;
             }
@@ -69,6 +75,7 @@ void searchFileFS(char *volume, char *file){
     uint64_t fileInode;
     DeepSearchExt4 ext4;
     struct tm *time;
+
     switch(checkFileSystem(volume)){
         case 1:
 

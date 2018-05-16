@@ -1,8 +1,3 @@
-//
-// Created by sergi on 11/4/18.
-//
-
-
 #ifndef RAGNAROK_FILEUTILITIES_H
 #define RAGNAROK_FILEUTILITIES_H
 

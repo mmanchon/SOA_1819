@@ -80,77 +80,98 @@ int fd;
 
 
 //Funciones necesarias para la fase 1
+
 /**
- * Función para mostrar la información de la Fase1
+ * Función para mostrar la información del volumen Ext4
  * @param ext4 Tipo que contiene la información
  */
+
 void showInfoExt4(VolumenExt4 ext4);
 
 /**
- *
- * @param fileSystem
- * @return
+ * Funcion necesaria para mostrar la informacion del volumen
+ * Esta funcion recorre el superbloque en busqueda de la informacion deseada
+ * @param fileSystem struct donde almacenamos la informacion
+ * @return struct lleno
  */
+
 FileSystem initSearchInfoExt4(FileSystem fileSystem);
 
 /**
- *
- * @param whence
- * @param offset
- * @param bytes
- * @param numArg
- * @param ...
+ * Funcion que te mueve por el fichero. Guarda el valor leido segun
+ * la variable que le pases y de que tipo sea
+ * @param whence SEEK_SET / SEEK_CUR /SEEK_END
+ * @param offset donde te tienes que mover
+ * @param bytes numero de bytes que leemos
+ * @param numArg numero de variables a leer (SIEMPRE 1)
+ * @param ... variable a leer
  */
+
 void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
 /**
- *
- * @param file
- * @return
+ * Funcion que distingue entre ext4 /ext3 /ext2
+ * @param file file descriptor
+ * @return segunt que tipo de volumen sea devuelve un valor
  */
+
 int checkIfExt4(int file);
 
 //Funciones necesarias para la fase2/3
 
 /**
- *
- * @param file
- * @param ext4
- * @return
+ * Funcion que busca la inforamcion necesaria dentro del superbloque para
+ * empezar a buscar el fichero.
+ * Una vez tiene la información busca el inicio de la tabla de inodos en
+ * el group descriptor.
+ * Finalmente busca el inicio del extent tree.
+ * @param file nombre del fichero a buscar
+ * @param ext4 struct con información necesaria
+ * @return el inodo, 0 altrament
  */
+
 uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4);
 
 /**
- *
- * @param ext4
- * @return
+ * Funcion para buscar el inicio del extent tree
+ * Calcula la posicion del inodo raiz, comprueba si hay un
+ * extent tree con el magic number y se mueve un offset
+ * @param ext4 struct con informacion necesaria
+ * @return inodo del fichero, 0 altrament
  */
+
 uint64_t searchExtentTree(DeepSearchExt4 *ext4);
 
 /**
- *
- * @param initExtentTree
- * @param ext4
- * @return
+ * Funcion para leer el numero de entries validas y el depth
+ * Segun esta informacion sabremos si es una hoja o un nodo interno
+ * @param initExtentTree offset donde empieza el extent tree
+ * @param ext4 struct con informacion
+ * @return inodo, 0 altrament
  */
+
 uint64_t searchInfoExtent(uint64_t initExtentTree, DeepSearchExt4 *ext4);
 
 /**
- *
- * @param initLeaf
- * @param ext4
- * @return
+ * Funcion necesaria para leer el numero de bloques que ocupa la eentry y
+ * la direccion dende esta se encuentra. Esta funcion se llama cuando sabemos
+ * que es un nodo hoja
+ * @param initLeaf offset donde leemos el nodo hoja
+ * @param ext4 struct con informacion
+ * @return inodo, 0 altrament
  */
+
 uint64_t infoLeaf(uint64_t initLeaf,DeepSearchExt4 *ext4);
 
 /**
- *
+ * Funcion para leer la inforamcion del directory entry.
  * @param adress
  * @param index
  * @param ee_len
  * @param ext4
  * @return
  */
+
 uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 *ext4);
 
 /**
@@ -159,6 +180,7 @@ uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSear
  * @param ext4
  * @return
  */
+
 uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 *ext4);
 
 /**
@@ -168,6 +190,7 @@ uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 *ext4);
  * @param name
  * @return
  */
+
 uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 *ext4, char *name);
 
 /**
@@ -175,6 +198,7 @@ uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 *ext4, char *name);
  * @param time
  * @return
  */
+
 struct tm* getTime(uint32_t time);
 
 //Funciones necesarias para la fase 4
@@ -191,7 +215,7 @@ void findFileInfo(uint64_t fileInode, DeepSearchExt4 ext4);
  * @param offset
  * @param ext4
  */
-void findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4);
+uint64_t findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4,uint64_t numRead);
 
 /**
  *
@@ -207,7 +231,7 @@ uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead);
  * @param initNode
  * @param ext4
  */
-void internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4);
+uint64_t internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4, uint64_t numRead);
 
 /**
  *
