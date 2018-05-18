@@ -427,7 +427,6 @@ uint64_t findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4, uint64_t numRe
     //leemos la informacion del numero de entradas validas y el depth del extent tree
     moveThroughExt4(SEEK_SET, offset + 0x2, BYTES_2, 1, &numEntries);
     moveThroughExt4(SEEK_SET, offset + 0x6, BYTES_2, 1, &depthExtentTree);
-
     if (depthExtentTree == 0) {
         //en caso que el depth sea igual a 0 entonces es hoja, se mira por cada una de las hojas
 
@@ -438,6 +437,7 @@ uint64_t findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4, uint64_t numRe
         //en caso de que sea diferente a 0 tenemos un extent tree
         for (i = 0; i < numEntries; i++) {
             numRead = internalFileNodes(offset + 0xC * (i + 1), ext4, numRead);
+
         }
     }
     return numRead;
@@ -450,7 +450,6 @@ uint64_t fileLeaf(uint64_t initLeaf, DeepSearchExt4 ext4, uint64_t numRead) {
     moveThroughExt4(SEEK_SET, initLeaf + 0x4, BYTES_2, 1, &ee_len);
     moveThroughExt4(SEEK_CUR, 0, BYTES_2, 1, &upperBlockNumber);
     moveThroughExt4(SEEK_CUR, 0, BYTES_4, 1, &lowerBlockNumber);
-
     ext4.blockAddress = upperBlockNumber;
     ext4.blockAddress = ext4.blockAddress << 32;
     ext4.blockAddress = ext4.blockAddress | lowerBlockNumber;
@@ -475,17 +474,18 @@ uint64_t internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4, uint64_t numR
 
 
 uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uint64_t numRead) {
-    uint64_t i = numRead;
+    uint64_t i = 0;
     char c;
 
+
     lseek(fd, offset, SEEK_SET);
-    while ((i < (ee_len * ext4.blockSize)) && (i < ext4.fileSize)) {
+    while ((i < (ee_len * ext4.blockSize)) && (numRead < ext4.fileSize)) {
         read(fd, &c, sizeof(char));
         printf("%c", c);
         i++;
+        numRead++;
     }
-    printf("\n");
-    return i;
+    return numRead;
 }
 
 void activateReadMode(uint64_t offset) {
