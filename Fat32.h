@@ -12,6 +12,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <stdarg.h>
+#include <time.h>
 
 
 //includes propios
@@ -125,7 +126,7 @@ int checkIfFat32(int file);
  * @return returnem el fs amb la informació obtinguda.
  */
 //FileSystem goTroughFS(FileSystem fileSystem);
-void goTroughFS(Lba_info info,char *argv, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode);
+void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode);
 
 /**
  * Funció destinada a la cerca del fitxer introduit per l'usuari
@@ -187,4 +188,8 @@ FileSystem activeReadModeFat32(FileSystem fileSystem,char *argv);
 FileSystem activeWriteModeFat32(FileSystem fileSystem,char *argv);
 FileSystem activeHideModeFat32(FileSystem fileSystem,char *argv);
 FileSystem desactivateHideModeFat32(FileSystem fileSystem,char *argv);
+FileSystem newDateFat32(FileSystem fileSystem,char *argv, char *date);
+void changeDateFileFat(uint64_t offset, char* date);
+
+void prepareShortName(char name[11]);
 #endif

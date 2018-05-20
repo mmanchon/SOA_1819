@@ -10,12 +10,20 @@
           <option name="port" value="22" />
         </fileTransfer>
       </webServer>
-      <webServer id="24b8c50f-0924-46ab-87c9-261213220d39" name="montserrat_uni" url="http://montserrat.salleurl.edu">
+      <webServer id="24b8c50f-0924-46ab-87c9-261213220d39" name="montserrat_uni_manel" url="http://montserrat.salleurl.edu">
         <fileTransfer host="montserrat.salleurl.edu" port="22" rootFolder="/users/home/alumnes/ls31343/SOA/Ragnarok" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>
           <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+      <webServer id="aff86934-9766-4a69-8efa-3f47141becc4" name="montserrat_uni_samu" url="http://montserrat.salleurl.edu">
+        <fileTransfer host="montserrat.salleurl.edu" port="21" rootFolder="/users/home/alumnes/ls30759/soa/Ragnarok">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="21" />
         </fileTransfer>
       </webServer>
     </option>

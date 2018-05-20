@@ -9,7 +9,14 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="montserrat_uni">
+      <paths name="montserrat_uni_manel">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="montserrat_uni_samu">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />

@@ -226,6 +226,7 @@ void unHiddenFile(char *volume, char *file){
 }
 
 void changeFileDate(char *volume, char *file, char* date){
+    FileSystem fileSystem;
     uint64_t fileInode;
     DeepSearchExt4 ext4;
 
@@ -243,8 +244,7 @@ void changeFileDate(char *volume, char *file, char* date){
             }
             break;
         case 2:
-            //activeReadModeFat32(fileSystem,argv[3]);
-
+            newDateFat32(fileSystem,file,date);
             break;
         default:
             printf(NOT_FOUND);
