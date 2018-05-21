@@ -94,8 +94,8 @@ typedef struct {
     uint8_t numberFat;
     uint16_t numberEntries;
     uint32_t sectorsPerFat;
-    uint32_t rootCluster;//4Bytes
-    char label[11];
+    uint32_t rootCluster;
+    char label[12];
 }VolumenFat32;
 
 typedef struct {

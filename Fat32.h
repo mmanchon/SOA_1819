@@ -212,4 +212,12 @@ void handlerMode(FileSystem fileSystem, Lba_info info, char *argv, char *date, i
  */
 void changeDateFileFat(uint64_t offset, char* date);
 
+/**
+ * Funció destinada a treure els espais en blanc i posar el punt de la extensió.
+ * @param name
+ * @param sfn
+ */
+void convertShortName(char *name, char *sfn);
+
+
 #endif

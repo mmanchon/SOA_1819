@@ -12,9 +12,7 @@ void showInfoFat32(VolumenFat32 fat32) {
     printf(ROOT_ENTRIES, (fat32.numberEntries));
     printf(SECTORS_FAT, (fat32.sectorsPerFat));
     printf(LABEL, fat32.label);
-
 }
-
 
 FileSystem getInfoFat32(FileSystem fileSystem) {
     moveThroughFat32(SEEK_SET, OFF_NAME_SYS, BYTES_8, MAX_NUM_LIST, fileSystem.fat32.systemName);
@@ -25,7 +23,7 @@ FileSystem getInfoFat32(FileSystem fileSystem) {
     moveThroughFat32(SEEK_CUR, NO_OFF, BYTES_2, MAX_NUM_LIST, &fileSystem.fat32.numberEntries);
     moveThroughFat32(SEEK_SET, OFF_SECTOR_FAT, BYTES_4, MAX_NUM_LIST, &fileSystem.fat32.sectorsPerFat);
     moveThroughFat32(SEEK_SET, OFF_LABEL, BYTES_11, MAX_NUM_LIST, fileSystem.fat32.label);
-
+    fileSystem.fat32.label[11] = 0;
     moveThroughFat32(SEEK_SET, OFF_ROOT_DIR, BYTES_4, MAX_NUM_LIST, &fileSystem.fat32.rootCluster);
     return fileSystem;
 }
@@ -220,10 +218,27 @@ void handlerMode(FileSystem fileSystem, Lba_info info, char *argv, char *date, i
     exit(1);
 }
 
+void convertShortName(char *name, char *sfn){
+    int i_short, i_ext;
+
+    for(i_short = 0; i_short < 8; i_short++){
+        if(sfn[i_short] == 0x20)break; //Comparem amb espai en blanc, en cas que ho sigui no igualem.
+        name[i_short] = sfn[i_short];
+    }
+    name[i_short] = '.';
+    i_short++;
+    for(i_ext = 8; i_ext < 11; i_ext++){
+        if(sfn[i_ext] == 0x20)break;
+        name[i_short] = sfn[i_ext];
+        i_short++;
+    }
+    name[10]=0;
+}
 
 void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode) {
     char type;
-
+    char *name = (char *)malloc(11);
+    memset(name,0,11);
     moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_11, MAX_NUM_LIST, info.dir.name);
 
     moveThroughFat32(SEEK_SET, info.lba_adrr + 16, BYTES_2, MAX_NUM_LIST, &info.dir.date.hex_date);
@@ -243,6 +258,7 @@ void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lb
                 goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
             } else {
                 printf("Error: File not found.\n");
+                free(name);
                 exit(1);
             }
         } else {
@@ -250,7 +266,6 @@ void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lb
             getAddr(1, &info, fileSystem);
             info.max_lba_adrr = info.lba_adrr + 512;
             goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
-
         }
     } else {
         //Obtenim els atributs i apliquem dos mascares per saber si el segment de 32B es fitxer/directori o LFN
@@ -278,6 +293,7 @@ void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lb
             }
         } else {
             info.dir.isLfn = 0;
+            convertShortName(name,info.dir.name);
         }
 
         //Entrem en un nou directori
@@ -290,21 +306,22 @@ void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lb
             //Entrem en un nou directori
             getAddr(1, &info, fileSystem);
             info.max_lba_adrr = info.max_lba_adrr + 512;
+            free(name);
             goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
 
-        } else if (!strcmp(info.dir.name, ".          ") || !strcmp(info.dir.name, "..         ")) {
-            //Mostrem el nom de fitxer, quan no es ni directori ni shortname.
-            //printf("\n\nDir name: %s\n", info.dir.name);
         }
 
-        if (!info.dir.isDir && !info.dir.isLfn && !strcmp(argv, info.name)) {
+        if (!info.dir.isDir && !info.dir.isLfn && (!strcmp(argv, info.name)||!strcmp(argv, name))){
             info.dir.date.year = ((info.dir.date.hex_date & 0xFE00) >> 9) + 1980;
             info.dir.date.month = ((info.dir.date.hex_date & 0xF0) >> 5);
             info.dir.date.day = ((info.dir.date.hex_date & 0x1F));
+            free(name);
             //Cridem a un handler que en funció del mode de busqueda realitzara la tasca corresponent
             handlerMode(fileSystem, info, argv, date, mode);
+
         } else {
             info.lba_adrr += 0x20;
+            free(name);
             goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
         }
     }
