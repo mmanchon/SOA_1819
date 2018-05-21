@@ -1,8 +1,5 @@
 #include "Fat32.h"
 
-//http://www.file-recovery.com/recovery-understanding-file-system-fat.htm
-//https://en.wikipedia.org/wiki/Design_of_the_FAT_file_system
-//http://www.c-jump.com/CIS24/Slides/FAT/lecture.html
 void showInfoFat32(VolumenFat32 fat32) {
     printf(FS_INFO);
     printf(TYPE_FS, "FAT32");
@@ -15,7 +12,7 @@ void showInfoFat32(VolumenFat32 fat32) {
     printf(ROOT_ENTRIES, (fat32.numberEntries));
     printf(SECTORS_FAT, (fat32.sectorsPerFat));
     printf(LABEL, fat32.label);
-    //printf(ROOT_CLUSTER,fat32.rootCluster);
+
 }
 
 
@@ -111,14 +108,13 @@ Lba_info recoveryLastTrace(Lba_info *trace, int *nTraces, Lba_info info) {
 char *getClusterContent(Lba_info info, uint32_t *size) {
     char aux;
     char *content_file = NULL;
-
-    moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_1, MAX_NUM_LIST, &aux);
+    moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_1_V2, MAX_NUM_LIST, &aux);
     content_file = (char *) realloc(content_file, sizeof(char) + (*size));
     content_file[(*size)] = aux;
     (*size)++;
 
     while ((*size) < info.dir.size || aux != 0) {
-        moveThroughFat32(SEEK_CUR, NO_OFF, BYTES_1, MAX_NUM_LIST, &aux);
+        moveThroughFat32(SEEK_CUR, NO_OFF, BYTES_1_V2, MAX_NUM_LIST, &aux);
         content_file = (char *) realloc(content_file, sizeof(char) + (*size));
         content_file[(*size)] = aux;
         (*size)++;
@@ -136,7 +132,7 @@ void showContent(Lba_info info, FileSystem fileSystem) {
     content_file = getClusterContent(info, &size);
     getAddr(2, &info, fileSystem);
 
-    //COMPROBAR FUNCIONAMENTO
+
     while (size < info.dir.size && info.lba_adrr <= 0xfff8) {
         strcat(content_file, getClusterContent(info, &size));
     }
@@ -147,35 +143,17 @@ void showContent(Lba_info info, FileSystem fileSystem) {
     exit(1);
 }
 
-void prepareShortName(char name[11]){
-    char  aux[11];
-    int i,j;
-    strcpy(aux,name);
-    memset(name,0, sizeof(name));
-    for (i = 0 ; i < 8; i++){
-      if(aux[i] == ' ') break;
-      name[i] = aux[i];
-    }
-    name[i] = '.';
-    i++;
-    for (j = 8 ; j < 11; j++){
-        if(aux[j] == ' ') break;
-        name[i] = aux[j];
-        i++;
-    }
-    printf("RISISIS----->%s\n",name);
-}
 
-void changeDateFileFat(uint64_t offset, char* date) {
+void changeDateFileFat(uint64_t offset, char *date) {
     struct tm time;
     char *token;
     int dateTime[3];
     int i = 0;
     uint16_t finalDate = 0;
 
-    token = strtok(date,"/");
+    token = strtok(date, "/");
 
-    while(token != NULL){
+    while (token != NULL) {
         dateTime[i] = atoi(token);
         token = strtok(NULL, "/");
         i++;
@@ -185,7 +163,7 @@ void changeDateFileFat(uint64_t offset, char* date) {
     time.tm_mon = dateTime[1];
     time.tm_mday = dateTime[0];
 
-    finalDate = (uint16_t)  ((time.tm_mday & 0b11111) |
+    finalDate = (uint16_t) ((time.tm_mday & 0b11111) |
                             (((time.tm_mon) & 0b1111) << 5) |
                             (((time.tm_year) & 0b1111111) << 9));
 
@@ -193,192 +171,147 @@ void changeDateFileFat(uint64_t offset, char* date) {
     write(fd, &finalDate, sizeof(finalDate));
 }
 
+void handlerMode(FileSystem fileSystem, Lba_info info, char *argv, char *date, int mode) {
+
+    switch (mode) {
+        case 0://Fase2-3 --> -search
+            printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size,
+                   info.dir.date.day,
+                   info.dir.date.month,
+                   info.dir.date.year);
+            break;
+        case 1://FASE 4 --> -show
+            showContent(info, fileSystem);
+            break;
+        case 2://FASE 5 --> -r
+            if (!(info.dir.attributes & 0x01)) {
+                info.dir.attributes = info.dir.attributes | 0x01;
+            }
+
+            lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
+            write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
+            break;
+        case 3://FASE 5 --> -w
+            if ((info.dir.attributes & 0x01)) {
+                info.dir.attributes = info.dir.attributes & 0xFE;
+            }
+            lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
+            write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
+            break;
+        case 4://FASE 5 --> -h
+            if ((info.dir.attributes & 0x02)) {
+                info.dir.attributes = info.dir.attributes & 0xFD;
+            }
+            lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
+            write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
+            break;
+        case 5://FASE 5 --> -s
+            if (!(info.dir.attributes & 0x02)) {
+                info.dir.attributes = info.dir.attributes | 0x02;
+            }
+            lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
+            write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
+            break;
+        case 6://FASE 5 --> -d
+            changeDateFileFat(info.lba_adrr, date);
+            break;
+    }
+    if(mode>1)printf("Se han editado los permisos de %s\n", argv);
+    exit(1);
+}
+
 
 void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode) {
     char type;
-    uint16_t test;
-    //printf("@@--> %x  ---  %x\n", info.lba_adrr, info.max_lba_adrr);
-    //if (info.lba_adrr <= info.max_lba_adrr) {
+
     moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_11, MAX_NUM_LIST, info.dir.name);
-    //printf("########\n%s\n%x\n%d\n########\n",info.dir.name, info.lba_adrr,info.i_cluster);
+
     moveThroughFat32(SEEK_SET, info.lba_adrr + 16, BYTES_2, MAX_NUM_LIST, &info.dir.date.hex_date);
     moveThroughFat32(SEEK_SET, info.lba_adrr + 28, BYTES_4, MAX_NUM_LIST, &info.dir.size);
     info.dir.name[11] = 0;
-    //} else{
-    //printf("#########\n@@ --><--@@\n#########\n");
-//}
-      //  printf("\t\tLBA_ADDR: %x\n", info.lba_adrr);
-       if (info.dir.name[0] == 0 || info.lba_adrr == info.max_lba_adrr) {
-            //Anem a la fat per obtenir la direcció del següent cluster.
-            getAddr(2, &info, fileSystem);
-            moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_4, MAX_NUM_LIST, &info.lba_adrr);
-            printf("\t\tLBA_ADDR: %x\n", info.lba_adrr);
-            //Diferenciem si la fat diu que no hi han mes clusters.
-            if (info.lba_adrr >= 0xffffff8) {
+    if (info.dir.name[0] == 0 || info.lba_adrr == info.max_lba_adrr) {
+        //Anem a la fat per obtenir la direcció del següent cluster.
+        getAddr(2, &info, fileSystem);
+        moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_4, MAX_NUM_LIST, &info.lba_adrr);
 
-                //printf("HOLA TETE-->%X --------------- %x\n", info.lba_adrr, info.max_lba_adrr);
+        //Diferenciem si la fat diu que no hi han mes clusters.
+        if (info.lba_adrr >= 0xffffff8) {
 
-                if (info.i_cluster != info.init_cluster) {
-                    info = recoveryLastTrace(trace, nTraces, info);
-                    printf("#####  BACK  ######\n\n");
-                    printf("INFO BACK: %s,%x\n", info.name, info.lba_adrr);
-                    goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
-                } else {
-                    printf("\n\nFile not found :[\n");
-                    exit(1);
-                }
-            } else {
-                info.i_cluster = info.lba_adrr;
-                getAddr(1, &info, fileSystem);
-                info.max_lba_adrr = info.lba_adrr + 512;
+            if (info.i_cluster != info.init_cluster) {
+                //Tornem al directori anterior
+                info = recoveryLastTrace(trace, nTraces, info);
                 goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
-
+            } else {
+                printf("\n\nFile not found :[\n");
+                exit(1);
             }
         } else {
-            //Obtenim els atributs i apliquem dos mascares per saber si el segment de 32B es fitxer/directori o LFN
-            moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
-            info.dir.isDir = info.dir.attributes & 0x10;
-            if (info.dir.isDir > 0)info.dir.isDir = 1;
-            info.dir.isLfn = info.dir.attributes & 0x0f;
+            info.i_cluster = info.lba_adrr;
+            getAddr(1, &info, fileSystem);
+            info.max_lba_adrr = info.lba_adrr + 512;
+            goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
 
-            if (info.dir.isLfn == 0x0f) {
-                info.dir.isLfn = 1;
-                moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_1, MAX_NUM_LIST, &type);
-                //printf("@@--> %x\n", type & 0x4F);
+        }
+    } else {
+        //Obtenim els atributs i apliquem dos mascares per saber si el segment de 32B es fitxer/directori o LFN
+        moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
+        info.dir.isDir = info.dir.attributes & 0x10;
+        if (info.dir.isDir > 0)info.dir.isDir = 1;
+        info.dir.isLfn = info.dir.attributes & 0x0f;
 
-                if ((type & 0x4F) == 0x41) {
-                    getLongName(&info);
-                    printf("\n\n41-->Dir name: %s\n", info.name);
+        if (info.dir.isLfn == 0x0f) {
+            info.dir.isLfn = 1;
+            moveThroughFat32(SEEK_SET, info.lba_adrr, BYTES_1, MAX_NUM_LIST, &type);
+            if ((type & 0x4F) == 0x41) {
+                getLongName(&info);
+                //printf("\n\nDir name: %s\n", info.name);
 
-                } else if ((type & 0x4F) > 41) {
-                    getLongName(&info);
-                    //memset(info.name,0,255);
-                } else if ((type & 0x4f) >= 1 && (type & 0x4f) < 41) {
-                    strcpy(info.old, info.name);
-                    getLongName(&info);
-                    strcat(info.name, info.old);
-                    if ((type & 0x4f) == 1) {
-                        printf("\n\n1-->Dir name: %s\n", info.name);
-                    }
+            } else if ((type & 0x4F) > 41) {
+                getLongName(&info);
+            } else if ((type & 0x4f) >= 1 && (type & 0x4f) < 41) {
+                strcpy(info.old, info.name);
+                getLongName(&info);
+                strcat(info.name, info.old);
+                if ((type & 0x4f) == 1) {
+                    //printf("\n\nDir name: %s\n", info.name);
                 }
-            } else {
-                info.dir.isLfn = 0;
-
-                //Nomes printem si no es ~ o espai entre el nom i extensio
-                //prepareShortName(info.name);
-
             }
-
-            //Entrem en un nou directori
-            if (info.dir.isDir && strcmp(info.dir.name, ".          ") && strcmp(info.dir.name, "..         ")) {
-                //Actualitzem el recorregut
-                trace = updateTrace(trace, nTraces, info);
-
-                info.i_cluster = getNextClusterAddr(info.lba_adrr);
-                printf("\n\n\tNew dir:\n");
-
-                getAddr(1, &info, fileSystem);
-                info.max_lba_adrr = info.max_lba_adrr + 512;
-                goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
-                //printf("###########\n");
-
-            //} else if (!strcmp(info.dir.name, ".          ") || !strcmp(info.dir.name, "..         ")) {
-                //Mostrem el nom de fitxer, quan no es ni directori ni shortname.
-                printf("\n\nDir name: %s\n", info.dir.name);
-            }
-
-            //printf("COMPARE:--> #%s#--#%s#\n", argv, info.name);
-            if (!info.dir.isDir && !info.dir.isLfn && !strcmp(argv, info.name)) {
-                info.dir.date.year = ((info.dir.date.hex_date & 0xFE00) >> 9) + 1980;
-                info.dir.date.month = ((info.dir.date.hex_date & 0xF0) >> 5);
-                info.dir.date.day = ((info.dir.date.hex_date & 0x1F));
-                switch (mode) {
-                    case 0://Fase2-3 --> -search
-                        printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size,
-                               info.dir.date.day,
-                               info.dir.date.month,
-                               info.dir.date.year);
-                        break;
-                    case 1://FASE 4 --> -show
-                        showContent(info, fileSystem);
-                        break;
-                    case 2://FASE 5 --> -r
-                        //TODO READ MODE
-                        //OFFSET 11 1B
-                        // READ_ONLY=0x01 HIDDEN=0x02 SYSTEM=0x04 VOLUME_ID=0x08 DIRECTORY=0x10 ARCHIVE=0x20 LFN=READ_ONLY|HIDDEN|SYSTEM|VOLUME_ID
-                        printf("OLD--> %x\n", info.dir.attributes);
-                        if (!(info.dir.attributes & 0x01)) {
-                            info.dir.attributes = info.dir.attributes | 0x01;
-                            //printf("OLD--> %x\n",info.dir.attributes);
-                        }
-
-                        lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
-                        write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
-                        //Comprovació que s'ha escrit correctament
-                        moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
-                        //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
-                        printf("NEW2--> %x\n", info.dir.attributes);
-                        break;
-                    case 3:
-                        printf("OLD--> %x\n", info.dir.attributes);
-                        if ((info.dir.attributes & 0x01)) {
-                            info.dir.attributes = info.dir.attributes & 0xFE;
-                            //printf("NEW1--> %x\n",info.dir.attributes);
-                        }
-                        lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
-                        write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
-                        //Comprovació que s'ha escrit correctament
-                        moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
-                        //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
-                        printf("NEW2--> %x\n", info.dir.attributes);
-                        break;
-                    case 4:
-                        printf("OLD--> %x\n", info.dir.attributes);
-                        if ((info.dir.attributes & 0x02)) {
-                            info.dir.attributes = info.dir.attributes & 0xFD;
-                            //printf("NEW1--> %x\n",info.dir.attributes);
-                        }
-                        lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
-                        write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
-                        //Comprovació que s'ha escrit correctament
-                        moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
-                        //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
-                        printf("NEW2--> %x\n", info.dir.attributes);
-                        break;
-                    case 5:
-                        printf("OLD--> %x\n", info.dir.attributes);
-                        if (!(info.dir.attributes & 0x02)) {
-                            info.dir.attributes = info.dir.attributes | 0x02;
-                        }
-                        lseek(fd, info.lba_adrr + 0x0B, SEEK_SET);
-                        write(fd, &info.dir.attributes, sizeof(info.dir.attributes));
-                        //Comprovació que s'ha escrit correctament
-                        moveThroughFat32(SEEK_SET, info.lba_adrr + 0x0B, BYTES_1, MAX_NUM_LIST, &info.dir.attributes);
-                        //printf("NEW2--> %x -- status--> %d\n",info.lba_adrr+0x0b,status);
-                        printf("NEW2--> %x\n", info.dir.attributes);
-                        break;
-                    case 6:
-                        moveThroughFat32(SEEK_SET, info.lba_adrr + 16, BYTES_2, MAX_NUM_LIST, &test);
-                        printf("OLD--> %x\n", test);
-                        changeDateFileFat(info.lba_adrr, date);
-
-                        moveThroughFat32(SEEK_SET, info.lba_adrr + 16, BYTES_2, MAX_NUM_LIST, &test);
-
-                        printf("NEW2--> %x\n", test);
-                        break;
-                }
-
-                exit(1);
-            } else {
-
-                info.lba_adrr += 0x20;
-                goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
-            }
+        } else {
+            info.dir.isLfn = 0;
         }
 
+        //Entrem en un nou directori
+        if (info.dir.isDir && strcmp(info.dir.name, ".          ") && strcmp(info.dir.name, "..         ")) {
+            //Actualitzem el recorregut
+            trace = updateTrace(trace, nTraces, info);
+
+            info.i_cluster = getNextClusterAddr(info.lba_adrr);
+
+            //Entrem en un nou directori
+            getAddr(1, &info, fileSystem);
+            info.max_lba_adrr = info.max_lba_adrr + 512;
+            goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
+
+        } else if (!strcmp(info.dir.name, ".          ") || !strcmp(info.dir.name, "..         ")) {
+            //Mostrem el nom de fitxer, quan no es ni directori ni shortname.
+            //printf("\n\nDir name: %s\n", info.dir.name);
+        }
+
+        if (!info.dir.isDir && !info.dir.isLfn && !strcmp(argv, info.name)) {
+            info.dir.date.year = ((info.dir.date.hex_date & 0xFE00) >> 9) + 1980;
+            info.dir.date.month = ((info.dir.date.hex_date & 0xF0) >> 5);
+            info.dir.date.day = ((info.dir.date.hex_date & 0x1F));
+            //Cridem a un handler que en funció del mode de busqueda realitzara la tasca corresponent
+            handlerMode(fileSystem, info, argv, date, mode);
+        } else {
+            info.lba_adrr += 0x20;
+            goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
+        }
+    }
+
 }
 
-FileSystem showContentFileFat32(FileSystem fileSystem, char *argv) {
+void searchHandler(FileSystem fileSystem, char *argv, char *date, int mode) {
     Lba_info info;
     Lba_info *trace;
     int nTraces;
@@ -395,34 +328,10 @@ FileSystem showContentFileFat32(FileSystem fileSystem, char *argv) {
     getAddr(0, &info, fileSystem);
     getAddr(1, &info, fileSystem);
     info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, " ", fileSystem, trace, &nTraces, 1);
+    goTroughFS(info, argv, date, fileSystem, trace, &nTraces, mode);
     printf("File not found! :(\n");
-
-    return fileSystem;
 }
 
-FileSystem searchFileFat32(FileSystem fileSystem, char *argv) {
-    Lba_info info;
-    Lba_info *trace;
-    int nTraces;
-
-    fileSystem = getInfoFat32(fileSystem);
-
-    //Inicialitzem les @
-    info.i_cluster = fileSystem.fat32.rootCluster;
-    info.init_cluster = info.i_cluster;
-
-    nTraces = 0;
-    trace = NULL;
-
-    getAddr(0, &info, fileSystem);
-    getAddr(1, &info, fileSystem);
-    info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, " ", fileSystem, trace, &nTraces, 0);
-    return fileSystem;
-}
 
 uint32_t getNextClusterAddr(uint32_t addr_base) {
     uint16_t low, high;
@@ -438,122 +347,6 @@ FileSystem initSearchInfoFat32(FileSystem fileSystem) {
     fileSystem = getInfoFat32(fileSystem);
     showInfoFat32(fileSystem.fat32);
     return fileSystem;
-}
-
-FileSystem activeReadModeFat32(FileSystem fileSystem,char *argv){
-    Lba_info info;
-    Lba_info *trace;
-    int nTraces;
-
-    fileSystem = getInfoFat32(fileSystem);
-
-    //Inicialitzem les @
-    info.i_cluster = fileSystem.fat32.rootCluster;
-    info.init_cluster = info.i_cluster;
-
-    nTraces = 0;
-    trace = NULL;
-
-    getAddr(0, &info, fileSystem);
-    getAddr(1, &info, fileSystem);
-    info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, " ", fileSystem, trace, &nTraces, 2);
-    return fileSystem;
-
-}
-
-FileSystem activeWriteModeFat32(FileSystem fileSystem,char *argv){
-    Lba_info info;
-    Lba_info *trace;
-    int nTraces;
-
-    fileSystem = getInfoFat32(fileSystem);
-
-    //Inicialitzem les @
-    info.i_cluster = fileSystem.fat32.rootCluster;
-    info.init_cluster = info.i_cluster;
-
-    nTraces = 0;
-    trace = NULL;
-
-    getAddr(0, &info, fileSystem);
-    getAddr(1, &info, fileSystem);
-    info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, " ", fileSystem, trace, &nTraces, 3);
-    return fileSystem;
-
-}
-
-FileSystem activeHideModeFat32(FileSystem fileSystem,char *argv){
-    Lba_info info;
-    Lba_info *trace;
-    int nTraces;
-
-    fileSystem = getInfoFat32(fileSystem);
-
-    //Inicialitzem les @
-    info.i_cluster = fileSystem.fat32.rootCluster;
-    info.init_cluster = info.i_cluster;
-
-    nTraces = 0;
-    trace = NULL;
-
-    getAddr(0, &info, fileSystem);
-    getAddr(1, &info, fileSystem);
-    info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, " ", fileSystem, trace, &nTraces, 4);
-    return fileSystem;
-
-}
-
-
-FileSystem desactivateHideModeFat32(FileSystem fileSystem,char *argv){
-    Lba_info info;
-    Lba_info *trace;
-    int nTraces;
-
-    fileSystem = getInfoFat32(fileSystem);
-
-    //Inicialitzem les @
-    info.i_cluster = fileSystem.fat32.rootCluster;
-    info.init_cluster = info.i_cluster;
-
-    nTraces = 0;
-    trace = NULL;
-
-    getAddr(0, &info, fileSystem);
-    getAddr(1, &info, fileSystem);
-    info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, " ", fileSystem, trace, &nTraces, 5);
-    return fileSystem;
-
-}
-
-FileSystem newDateFat32(FileSystem fileSystem,char *argv, char *date){
-    Lba_info info;
-    Lba_info *trace;
-    int nTraces;
-
-    fileSystem = getInfoFat32(fileSystem);
-
-    //Inicialitzem les @
-    info.i_cluster = fileSystem.fat32.rootCluster;
-    info.init_cluster = info.i_cluster;
-
-    nTraces = 0;
-    trace = NULL;
-
-    getAddr(0, &info, fileSystem);
-    getAddr(1, &info, fileSystem);
-    info.max_lba_adrr = info.lba_adrr + 512;
-    //printf("@@--> %x  ---  %x\n\n",info.lba_adrr,info.max_lba_adrr);
-    goTroughFS(info, argv, date, fileSystem, trace, &nTraces, 6);
-    return fileSystem;
-
 }
 
 void moveThroughFat32(int whence, off_t offset, int bytes, int numArg, ...) {
@@ -578,19 +371,19 @@ void moveThroughFat32(int whence, off_t offset, int bytes, int numArg, ...) {
                 printf("Erro. La lectura de 2byte na ha sido posible\n");
                 exit(1);
             }
-
-            /*uint16_t *aux = va_arg(valist, uint16_t * );
-            if (read(fd, aux, sizeof(uint16_t)) <= 0) {
-                printf("Erro. La lectura de 2 byte na ha sido posible\n");
-                exit(1);
-            }*/
         } else if (bytes == BYTES_1) {
             char *aux = va_arg(valist, uint8_t *);
             if (read(fd, aux, sizeof(uint8_t)) <= 0) {
-                printf("Erro. La lectura de 1byte na ha sido posible\n");
+                printf("Erro. La lectura de 1 byte na ha sido posible\n");
                 exit(1);
             }
-        } else if (bytes == BYTES_8) {
+        }else if (bytes == BYTES_1_V2) {
+            char *aux = va_arg(valist, uint8_t *);
+            if (read(fd, aux, sizeof(uint8_t)) <= 0) {
+                printf("File is empty.\n");
+                exit(1);
+            }
+        }else if (bytes == BYTES_8) {
             char *aux = va_arg(valist, char *);
             if (read(fd, aux, sizeof(char) * 8) <= 0) {
                 printf("Erro. La lectura de 8byte na ha sido posible\n");
@@ -618,32 +411,30 @@ void moveThroughFat32(int whence, off_t offset, int bytes, int numArg, ...) {
         }
     } else {
         printf("Error. El lseek no ha funcionado\n");
-
         exit(1);
     }
     va_end(valist);
 }
 
 int checkIfFat32(int file) {
-        fd = file;
-        char aux[8];
-        moveThroughFat32(SEEK_SET, OFF_FAT_TYPE, BYTES_8, 1, aux);
-        //printf("BUFFER: -%s-\n", aux);
-        if (strcmp(aux, "FAT32   ") == 0) {
-            return 1;
-        } else{
-            moveThroughFat32(SEEK_SET, OFF_FAT_TYPE_2, BYTES_8, 1, aux);
-            if (strcmp(aux, "FAT12   ") == 0) {
-                printf(NOT_RECOGNIZED, "FAT12");
-                exit(1);
-            } else if (strcmp(aux, "FAT16   ") == 0) {
-                printf(NOT_RECOGNIZED, "FAT16");
-                exit(1);
-            } else {
-                printf(NOT_FOUND);
-                return 0;
+    fd = file;
+    char aux[8];
+    moveThroughFat32(SEEK_SET, OFF_FAT_TYPE, BYTES_8, 1, aux);
+    //printf("BUFFER: -%s-\n", aux);
+    if (strcmp(aux, "FAT32   ") == 0) {
+        return 1;
+    } else {
+        moveThroughFat32(SEEK_SET, OFF_FAT_TYPE_2, BYTES_8, 1, aux);
+        if (strcmp(aux, "FAT12   ") == 0) {
+            printf(NOT_RECOGNIZED, "FAT12");
+            exit(1);
+        } else if (strcmp(aux, "FAT16   ") == 0) {
+            printf(NOT_RECOGNIZED, "FAT16");
+            exit(1);
+        } else {
+            printf(NOT_FOUND);
+            return 0;
 
-            }
         }
-
     }
+}

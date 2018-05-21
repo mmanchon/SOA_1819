@@ -90,7 +90,8 @@ void searchFileFS(char *volume, char *file){
 
             break;
         case 2:
-            fileSystem = searchFileFat32(fileSystem, file);
+
+            searchHandler(fileSystem,file," ",0);
 
             break;
         default:
@@ -120,7 +121,8 @@ void showFileFS(char *volume, char *file){
 
             break;
         case 2:
-            showContentFileFat32(fileSystem,file);
+
+            searchHandler(fileSystem,file," ",1);
 
             break;
         default:
@@ -148,7 +150,8 @@ void onlyReadMode(char *volume, char *file){
             }
             break;
         case 2:
-            activeReadModeFat32(fileSystem,file);
+
+            searchHandler(fileSystem,file," ",2);
 
             break;
         default:
@@ -176,7 +179,8 @@ void notOnlyReadMode(char *volume, char *file){
             }
             break;
         case 2:
-            activeWriteModeFat32(fileSystem,file);
+
+            searchHandler(fileSystem,file," ",3);
 
             break;
         default:
@@ -196,8 +200,7 @@ void hiddenFile(char *volume, char *file){
 
             break;
         case 2:
-            activeHideModeFat32(fileSystem,file);
-
+            searchHandler(fileSystem,file," ",4);
             break;
         default:
             printf(NOT_FOUND);
@@ -215,7 +218,7 @@ void unHiddenFile(char *volume, char *file){
 
             break;
         case 2:
-            desactivateHideModeFat32(fileSystem,file);
+            searchHandler(fileSystem,file," ",5);
 
             break;
         default:
@@ -244,7 +247,7 @@ void changeFileDate(char *volume, char *file, char* date){
             }
             break;
         case 2:
-            newDateFat32(fileSystem,file,date);
+            searchHandler(fileSystem,file,date,6);
             break;
         default:
             printf(NOT_FOUND);

@@ -10,8 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f0b9e617-b676-4a1a-9e0c-97e9a022002c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/webServers.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webServers.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fat32.c" beforeDir="false" afterPath="$PROJECT_DIR$/Fat32.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Fat32.h" beforeDir="false" afterPath="$PROJECT_DIR$/Fat32.h" afterDir="false" />
@@ -44,8 +42,8 @@
           <file leaf-file-name="Fat32.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Fat32.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="419">
-                  <caret line="284" column="14" selection-start-line="284" selection-start-column="14" selection-end-line="284" selection-end-column="14" />
+                <state relative-caret-position="738">
+                  <caret line="214" column="30" lean-forward="true" selection-start-line="214" selection-start-column="30" selection-end-line="214" selection-end-column="30" />
                 </state>
               </provider>
             </entry>
@@ -71,15 +69,6 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="FileUtilities.c" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/FileUtilities.c">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="333">
-                  <caret line="246" column="47" selection-start-line="246" selection-start-column="47" selection-end-line="246" selection-end-column="47" />
-                </state>
-              </provider>
-            </entry>
-          </file>
         </leaf>
       </split-first>
       <split-second>
@@ -87,8 +76,8 @@
           <file leaf-file-name="Fat32.h" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Fat32.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="728">
-                  <caret line="193" column="36" selection-start-line="193" selection-start-column="36" selection-end-line="193" selection-end-column="36" />
+                <state relative-caret-position="782">
+                  <caret line="36" column="22" selection-start-line="36" selection-start-column="22" selection-end-line="36" selection-end-column="22" />
                   <folding>
                     <element signature="e#60#82#0" expanded="true" />
                   </folding>
@@ -101,6 +90,15 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="2507">
                   <caret line="109" column="21" selection-start-line="109" selection-start-column="21" selection-end-line="109" selection-end-column="21" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="FileUtilities.c" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/FileUtilities.c">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-46">
+                  <caret line="93" column="47" selection-start-line="93" selection-start-column="47" selection-end-line="93" selection-end-column="47" />
                 </state>
               </provider>
             </entry>
@@ -153,6 +151,7 @@
       <find>max_lba_adrr</find>
       <find>goTroughFS</find>
       <find>info.dir.size</find>
+      <find>BYTES_1</find>
     </findStrings>
     <replaceStrings>
       <replace>info-&gt;</replace>
@@ -196,9 +195,10 @@
   </component>
   <component name="OCFindUsagesOptions" text="false" ivars="false" properties="false" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-7" />
+    <option name="x" value="279" />
+    <option name="y" value="211" />
     <option name="width" value="974" />
-    <option name="height" value="1087" />
+    <option name="height" value="1080" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -275,7 +275,7 @@
       <workItem from="1526391979749" duration="2057000" />
       <workItem from="1526642440861" duration="12826000" />
       <workItem from="1526798746273" duration="3472000" />
-      <workItem from="1526838270257" duration="13400000" />
+      <workItem from="1526838270257" duration="18781000" />
     </task>
     <task id="LOCAL-00001" summary="detect if the file exists, open file and  regular control.&#10;&#10;Change the char we read, it should be 2 chars">
       <created>1523470046486</created>
@@ -375,18 +375,25 @@
       <option name="project" value="LOCAL" />
       <updated>1525976251937</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="#5 Fecha en fat32 implementada y bugs resueltos.">
+      <created>1526856634247</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1526856634247</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="239787000" />
+    <option name="totallyTimeSpent" value="245168000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Remote Host" order="3" weight="0.328541" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.07933972" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.07933972" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="CMake" order="7" weight="0.0984127" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
@@ -408,23 +415,24 @@
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="right" id="Remote Host" order="3" weight="0.3294271" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.103515625" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.33297643" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="Remote Host" order="3" weight="0.328541" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.07933972" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="File Transfer" order="10" visible="true" weight="0.26344827" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32976446" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32979852" />
+      <window_info anchor="bottom" id="File Transfer" order="11" weight="0.26137567" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="CMake" order="11" weight="0.27172413" />
+      <window_info anchor="bottom" id="CMake" order="12" weight="0.0984127" />
       <window_info id="Favorites" order="2" side_tool="true" />
     </layout-to-restore>
   </component>
@@ -449,7 +457,8 @@
     <MESSAGE value="#1 Corregido reconocimiento fat32, fat12 y fat16" />
     <MESSAGE value="#4 Sín warnings" />
     <MESSAGE value="#5 Todo menos fecha de Fat32 con alteraciones en main y permisos de apertura al abrir los volumenes" />
-    <option name="LAST_COMMIT_MESSAGE" value="#5 Todo menos fecha de Fat32 con alteraciones en main y permisos de apertura al abrir los volumenes" />
+    <MESSAGE value="#5 Fecha en fat32 implementada y bugs resueltos." />
+    <option name="LAST_COMMIT_MESSAGE" value="#5 Fecha en fat32 implementada y bugs resueltos." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -792,13 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/FileUtilities.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="246" column="47" selection-start-line="246" selection-start-column="47" selection-end-line="246" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/MinGW-4.8.1/include/time.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="218">
@@ -806,10 +808,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/FileUtilities.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-46">
+          <caret line="93" column="47" selection-start-line="93" selection-start-column="47" selection-end-line="93" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Fat32.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="728">
-          <caret line="193" column="36" selection-start-line="193" selection-start-column="36" selection-end-line="193" selection-end-column="36" />
+        <state relative-caret-position="782">
+          <caret line="36" column="22" selection-start-line="36" selection-start-column="22" selection-end-line="36" selection-end-column="22" />
           <folding>
             <element signature="e#60#82#0" expanded="true" />
           </folding>
@@ -818,8 +827,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Fat32.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="284" column="14" selection-start-line="284" selection-start-column="14" selection-end-line="284" selection-end-column="14" />
+        <state relative-caret-position="738">
+          <caret line="214" column="30" lean-forward="true" selection-start-line="214" selection-start-column="30" selection-end-line="214" selection-end-column="30" />
         </state>
       </provider>
     </entry>

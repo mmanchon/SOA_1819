@@ -34,6 +34,7 @@
 
 #define BYTES_10 10
 #define BYTES_12 12
+#define BYTES_1_V2 100
 
 #define OFF_NAME_SYS 3
 #define OFF_SECTOR_FAT 0x24
@@ -64,7 +65,6 @@ typedef struct{
     char longname1[11];
     char longname2[13];
     char longname3[5];
-    char hola;
     uint32_t size;
     Date date;
 }Dir_info;
@@ -77,7 +77,6 @@ typedef struct{
     uint32_t init_cluster;
     char name[255];
     char old[255];
-    char new_name[255];
     Dir_info dir;
 }Lba_info;
 
@@ -184,12 +183,33 @@ void getAddr(int mode,Lba_info *info,FileSystem fileSystem);
  */
 FileSystem showContentFileFat32(FileSystem fileSystem, char *argv);
 
-FileSystem activeReadModeFat32(FileSystem fileSystem,char *argv);
-FileSystem activeWriteModeFat32(FileSystem fileSystem,char *argv);
-FileSystem activeHideModeFat32(FileSystem fileSystem,char *argv);
-FileSystem desactivateHideModeFat32(FileSystem fileSystem,char *argv);
-FileSystem newDateFat32(FileSystem fileSystem,char *argv, char *date);
+
+/**
+ * Funcio destinada a inicialitzar la cerca i realitzar la crida a la funció de cerca en el mode correcte.
+ * @param fileSystem  Variable amb la informació del sistema de fitxers.
+ * @param argv  Nom del fitxer a cercar
+ * @param date  Data de creació del fitxer, que en cas de no ser el mode s'envia espai en blanc
+ * @param mode  Mode que es desitja realitzar la cerca.
+ */
+void searchHandler(FileSystem fileSystem, char *argv, char *date, int mode);
+
+/**
+ * Handler de modes, cridat desde la funcio de cerca, s'encarrega de realitzar les modificacions de permissos
+ * i mostrar la informació corresponent amb cada mode indicat per l'usuari.
+ * @param fileSystem
+ * @param info
+ * @param argv
+ * @param date
+ * @param mode
+ */
+void handlerMode(FileSystem fileSystem, Lba_info info, char *argv, char *date, int mode);
+
+/**
+ * Sent una adaptació de la mateixa funció utilitzada a ext4, es l'encarregada de realitzar el format de la data
+ * corresponent amb FAT32.
+ * @param offset Direcció base del segment on ens trobem.
+ * @param date Data a modificar en el mateix format que ens l'ha  introduit l'usuari.
+ */
 void changeDateFileFat(uint64_t offset, char* date);
 
-void prepareShortName(char name[11]);
 #endif
