@@ -95,7 +95,7 @@ Lba_info *updateTrace(Lba_info *trace, int *nTraces, Lba_info info) {
 Lba_info recoveryLastTrace(Lba_info *trace, int *nTraces, Lba_info info) {
     if ((*nTraces) <= 0) {
         free(trace);
-        printf("\n\nFile not found :[\n");
+        printf("Error: File not found.\n");
         exit(1);
     } else {
         info = trace[(*nTraces) - 1];
@@ -242,7 +242,7 @@ void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lb
                 info = recoveryLastTrace(trace, nTraces, info);
                 goTroughFS(info, argv, date, fileSystem, trace, nTraces, mode);
             } else {
-                printf("\n\nFile not found :[\n");
+                printf("Error: File not found.\n");
                 exit(1);
             }
         } else {
@@ -329,7 +329,7 @@ void searchHandler(FileSystem fileSystem, char *argv, char *date, int mode) {
     getAddr(1, &info, fileSystem);
     info.max_lba_adrr = info.lba_adrr + 512;
     goTroughFS(info, argv, date, fileSystem, trace, &nTraces, mode);
-    printf("File not found! :(\n");
+    printf("Error: File not found.\n");
 }
 
 
