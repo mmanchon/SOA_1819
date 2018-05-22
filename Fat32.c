@@ -173,13 +173,19 @@ void handlerMode(FileSystem fileSystem, Lba_info info, char *argv, char *date, i
 
     switch (mode) {
         case 0://Fase2-3 --> -search
-            printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size,
+            if((info.dir.attributes & 0x02))//Comprovem que no sigui ocult
+                printf("File Found! \t Size: %d Bytes\t Date: %.2d/%.2d/%.4d\n\n", info.dir.size,
                    info.dir.date.day,
                    info.dir.date.month,
                    info.dir.date.year);
+            else
+                printf("Error: File not found.\n");
             break;
         case 1://FASE 4 --> -show
-            showContent(info, fileSystem);
+            if((info.dir.attributes & 0x02))//Comprovem que no sigui ocult
+                showContent(info, fileSystem);
+            else
+                printf("Error: File not found.\n");
             break;
         case 2://FASE 5 --> -r
             if (!(info.dir.attributes & 0x01)) {
@@ -233,6 +239,7 @@ void convertShortName(char *name, char *sfn){
         i_short++;
     }
     name[10]=0;
+
 }
 
 void goTroughFS(Lba_info info, char *argv, char *date, FileSystem fileSystem, Lba_info *trace, int *nTraces, int mode) {
