@@ -1,7 +1,5 @@
 all: Ragnarok
 
-command=-info
-
 main.o: main.c FileUtilities.h
 	gcc main.c -c -Wall -Wextra -g3
 
@@ -16,8 +14,6 @@ Fat32.o: Fat32.c Fat32.h
 
 Ragnarok: main.o FileUtilities.o Ext4.o Fat32.o
 	gcc main.o FileUtilities.o Ext4.o Fat32.o -o Ragnarok -Wall -Wextra -lm -g3
-
-run: ./Ragnarok $(command) ../Volumenes/Volume_1_1024_Block_Size.ext4
 
 clean:
 	rm *.o Ragnarok
