@@ -118,7 +118,7 @@ void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 int checkIfExt4(int file);
 
 /**
- *
+ * Funcion que nos devuelve el struct del tiempo
  * @param time
  * @return
  */
@@ -183,7 +183,7 @@ uint64_t infoLeaf(uint64_t initLeaf,DeepSearchExt4 *ext4);
 uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSearchExt4 *ext4);
 
 /**
- *
+ * Función que recorre los nodos internos del extent tree
  * @param initNode
  * @param ext4
  * @return
@@ -192,7 +192,7 @@ uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSear
 uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 *ext4);
 
 /**
- *
+ * Funcion para comprobar que el fichero es el que busca el comando
  * @param dir
  * @param ext4
  * @param name
@@ -206,21 +206,24 @@ uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 *ext4, char *name);
 //Funciones necesarias para la fase 4
 
 /**
- *
+ * Funcion inicial para mostrar el contenido del fichero
  * @param fileInode
  * @param ext4
  */
 void findFileInfo(uint64_t fileInode, DeepSearchExt4 ext4);
 
 /**
- *
+ * Funcion para leer el numero de entries validas y el depth
+ * Segun esta informacion sabremos si es una hoja o un nodo interno
  * @param offset
  * @param ext4
  */
 uint64_t findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4,uint64_t numRead);
 
 /**
- *
+ *Funcion necesaria para leer el numero de bloques que ocupa la eentry y
+ * la direccion dende esta se encuentra. Esta funcion se llama cuando sabemos
+ * que es un nodo hoja
  * @param initLeaf
  * @param ext4
  * @param numRead
@@ -229,14 +232,14 @@ uint64_t findExtentTreeInfo(uint64_t offset, DeepSearchExt4 ext4,uint64_t numRea
 uint64_t fileLeaf(uint64_t initLeaf,DeepSearchExt4 ext4, uint64_t numRead);
 
 /**
- *
+ * Función que recorre los nodos internos del extent tree
  * @param initNode
  * @param ext4
  */
 uint64_t internalFileNodes(uint64_t initNode, DeepSearchExt4 ext4, uint64_t numRead);
 
 /**
- *
+ * Muestra la información del fichero
  * @param offset
  * @param ee_len
  * @param ext4
@@ -248,19 +251,19 @@ uint64_t showInfoFile(uint64_t offset, uint16_t ee_len, DeepSearchExt4 ext4, uin
 //Funciones fase 5
 
 /**
- *
+ * Modifica los parametros del fichero a solo lectura
  * @param offset
  */
 void activateReadMode(uint64_t offset);
 
 /**
- *
+ * Modifica los parametros del fichero a no solo lectura
  * @param offset
  */
 void deactivateReadMode(uint64_t offset);
 
 /**
- *
+ * Modifica la fecha de creacion
  * @param offset
  * @param date
  */
