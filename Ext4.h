@@ -117,6 +117,14 @@ void moveThroughExt4(int whence,off_t offset,int bytes, int numArg, ...);
 
 int checkIfExt4(int file);
 
+/**
+ *
+ * @param time
+ * @return
+ */
+
+struct tm* getTime(uint32_t time);
+
 //Funciones necesarias para la fase2/3
 
 /**
@@ -193,13 +201,7 @@ uint64_t internalNodesExtentTree(uint64_t initNode, DeepSearchExt4 *ext4);
 
 uint64_t checkFile(ext4_dir_entry_2 dir,DeepSearchExt4 *ext4, char *name);
 
-/**
- *
- * @param time
- * @return
- */
 
-struct tm* getTime(uint32_t time);
 
 //Funciones necesarias para la fase 4
 

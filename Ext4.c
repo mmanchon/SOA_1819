@@ -340,9 +340,8 @@ uint64_t readDirectoryInfo(uint64_t adress, int index, uint16_t ee_len, DeepSear
 
         name = calloc(dir.name_len, sizeof(char));
         read(fd, name, sizeof(char) * dir.name_len);
-
-        if ((dir.file_type & 0x2) > 0 && memcmp(name, ".", sizeof(char)) != 0 &&
-            memcmp(name, "..", sizeof(char) * 2) != 0) {
+          if ((dir.file_type & 0x2) > 0 && strcmp(name, ".") != 0 &&
+            strcmp(name, "..") != 0) {
 
             if ((fileInode = searchInfoExtent(
                     ext4->initInodeTable + ((dir.inode - 1) % ext4->inodesPerGroup) * ext4->inodeSize + OFF_EXTENT_TREE,
@@ -372,7 +371,7 @@ uint64_t checkFile(ext4_dir_entry_2 dir, DeepSearchExt4 *ext4, char *name) {
     uint64_t fileSize;
 
     if ((dir.file_type & 0x1) > 0) {
-        if (memcmp(ext4->file, name, sizeof(char) * strlen(name)) == 0) {
+        if (strcmp(ext4->file, name) == 0) {
 
             moveThroughExt4(SEEK_SET,
                             ext4->initInodeTable + ((dir.inode - 1) % ext4->inodesPerGroup) * ext4->inodeSize +
