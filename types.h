@@ -124,6 +124,8 @@ typedef struct{
     uint64_t initInodeFile;
     uint64_t fileSize;
     uint32_t dateFile;
+    uint32_t incompat;
+    uint16_t desc_size;
 }DeepSearchExt4;
 
 #endif //RAGNAROK_TYPES_H

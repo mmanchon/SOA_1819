@@ -184,6 +184,8 @@ uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4) {
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x28, BYTES_4, MAX_NUM_LIST, &(ext4->inodesPerGroup));
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x60, BYTES_4, MAX_NUM_LIST, &felx_bg);
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x58, BYTES_2, MAX_NUM_LIST, &(ext4->inodeSize));
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0x60, BYTES_4, MAX_NUM_LIST, &(ext4->incompat));
+    moveThroughExt4(SEEK_SET, PADDING_EXT4 + 0xFE, BYTES_2, MAX_NUM_LIST, &(ext4->desc_size));
     ext4->blockSize = pow(2, (10 + ext4->blockSize));
     moveThroughExt4(SEEK_SET, PADDING_EXT4 + OFF_BLOCKGROUP_SIZE, BYTES_2, 1, &(ext4->blockGroupSize));
 
@@ -207,9 +209,13 @@ uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4) {
 
 
     //shiftamos 32 bits la tabla y hacemos una OR logica para añadir los bits de menos peso
-    inodeTable = upperInodeTable;
-    inodeTable = inodeTable << 32;
-    inodeTable = inodeTable | lowerInodeTable;
+    if((ext4->incompat & 0x80) > 0 && ext4->desc_size > 32){
+        inodeTable = upperInodeTable;
+        inodeTable = inodeTable << 32;
+        inodeTable = inodeTable | lowerInodeTable;
+    }else{
+        inodeTable = lowerInodeTable;
+    }
 
     //El inicio de la tabla de inodos se encuentra en la posicion leida por el tamaño de bloque
     ext4->initInodeTable = ext4->blockSize * inodeTable;
@@ -223,7 +229,6 @@ uint64_t searchFileExt4(char *file, DeepSearchExt4 *ext4) {
 uint64_t searchExtentTree(DeepSearchExt4 *ext4) {
     int index = 0, offset = 0;
     uint16_t magicNumber = 0;
-    uint32_t aux = 0;
     uint64_t fileInode = 0;
 
     //formula para saber donde se encuentra el inodo correspondiente (empezamos por el raiz)
@@ -241,10 +246,6 @@ uint64_t searchExtentTree(DeepSearchExt4 *ext4) {
     //leemos el flag necesario para la fase 4
     //Al final no ha sido necesario, este flag nos indica que se pueden
     //almacenar ficheros muy grandes
-
-    lseek(fd, ext4->initInodeTable + 0x20 + offset, SEEK_SET);
-    read(fd, &aux, sizeof(aux));
-
     //Magic number para saber si es extent tree
     if (magicNumber == 0xF30A) {
 
