@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
-
+Volumenes/
+Volumenes/*
 # Object files
 *.o
 *.ko
@@ -50,6 +51,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-CMakeLists.txt
+#CMakeLists.txt
 .idea/*
 cmake-build-debug/

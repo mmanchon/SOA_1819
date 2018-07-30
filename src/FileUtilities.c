@@ -1,5 +1,5 @@
 
-#include "FileUtilities.h"
+#include "../include/FileUtilities.h"
 
 
 int checkFileSystem(char *volume){
@@ -30,10 +30,10 @@ int detectFileSystemType(int fd) {
     uint16_t buffer;
 
     //Comprovamos si nos podemos mover hasta la posicion deseada
-    if (!(lseek(fd, PADDING_EXT4 + OFFSET_MAGICNUMBER, SEEK_SET) < 0)) {
+    if ((lseek(fd, PADDING_EXT4 + OFFSET_MAGICNUMBER, SEEK_SET) > 0)) {
 
         //leemos el file magic number
-        if (!(read(fd, &buffer, sizeof(uint16_t)) <= 0)) {
+        if ((read(fd, &buffer, sizeof(uint16_t)) > 0)) {
 
             //en caso de haber magic numbre estamos en un FS de tipo EXT
             if (buffer == MAGIC_NUMBER_EXT4) {
@@ -52,15 +52,15 @@ int detectFileSystemType(int fd) {
 }
 
 void infoFS(char *volume){
-    FileSystem fileSystem;
 
     switch(checkFileSystem(volume)){
         case 1:
-            fileSystem = initSearchInfoExt4(fileSystem);
+
+            initSearchInfoExt4();
 
             break;
         case 2:
-            fileSystem = initSearchInfoFat32(fileSystem);
+            initSearchInfoFat32();
 
             break;
         default:
@@ -71,7 +71,6 @@ void infoFS(char *volume){
 }
 
 void searchFileFS(char *volume, char *file){
-    FileSystem fileSystem;
     uint64_t fileInode;
     DeepSearchExt4 ext4;
     struct tm *time;
@@ -91,7 +90,6 @@ void searchFileFS(char *volume, char *file){
             break;
         case 2:
 
-            searchHandler(fileSystem,file," ",0);
 
             break;
         default:
@@ -102,7 +100,6 @@ void searchFileFS(char *volume, char *file){
 }
 
 void showFileFS(char *volume, char *file){
-    FileSystem fileSystem;
     uint64_t fileInode;
     DeepSearchExt4 ext4;
 
@@ -122,7 +119,6 @@ void showFileFS(char *volume, char *file){
             break;
         case 2:
 
-            searchHandler(fileSystem,file," ",1);
 
             break;
         default:
@@ -133,7 +129,6 @@ void showFileFS(char *volume, char *file){
 }
 
 void onlyReadMode(char *volume, char *file){
-    FileSystem fileSystem;
     uint64_t fileInode;
     DeepSearchExt4 ext4;
 
@@ -151,7 +146,6 @@ void onlyReadMode(char *volume, char *file){
             break;
         case 2:
 
-            searchHandler(fileSystem,file," ",2);
 
             break;
         default:
@@ -162,7 +156,6 @@ void onlyReadMode(char *volume, char *file){
 }
 
 void notOnlyReadMode(char *volume, char *file){
-    FileSystem fileSystem;
     uint64_t fileInode;
     DeepSearchExt4 ext4;
 
@@ -180,7 +173,6 @@ void notOnlyReadMode(char *volume, char *file){
             break;
         case 2:
 
-            searchHandler(fileSystem,file," ",3);
 
             break;
         default:
@@ -192,7 +184,6 @@ void notOnlyReadMode(char *volume, char *file){
 }
 
 void hiddenFile(char *volume, char *file){
-    FileSystem fileSystem;
 
     switch(checkFileSystem(volume)){
         case 1:
@@ -200,7 +191,6 @@ void hiddenFile(char *volume, char *file){
 
             break;
         case 2:
-            searchHandler(fileSystem,file," ",4);
             break;
         default:
             printf(NOT_FOUND);
@@ -210,7 +200,6 @@ void hiddenFile(char *volume, char *file){
 }
 
 void unHiddenFile(char *volume, char *file){
-    FileSystem fileSystem;
 
     switch(checkFileSystem(volume)){
         case 1:
@@ -218,7 +207,6 @@ void unHiddenFile(char *volume, char *file){
 
             break;
         case 2:
-            searchHandler(fileSystem,file," ",5);
 
             break;
         default:
@@ -229,7 +217,6 @@ void unHiddenFile(char *volume, char *file){
 }
 
 void changeFileDate(char *volume, char *file, char* date){
-    FileSystem fileSystem;
     uint64_t fileInode;
     DeepSearchExt4 ext4;
 
@@ -247,7 +234,6 @@ void changeFileDate(char *volume, char *file, char* date){
             }
             break;
         case 2:
-            searchHandler(fileSystem,file,date,6);
             break;
         default:
             printf(NOT_FOUND);

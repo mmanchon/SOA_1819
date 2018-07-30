@@ -17,7 +17,7 @@
 #include <stdarg.h>
 #include <time.h>
 //includes propios
-#include "types.h"
+#include "Types.h"
 
 
 /**
@@ -95,7 +95,7 @@ void showInfoExt4(VolumenExt4 ext4);
  * @return struct lleno
  */
 
-FileSystem initSearchInfoExt4(FileSystem fileSystem);
+void initSearchInfoExt4();
 
 /**
  * Funcion que te mueve por el fichero. Guarda el valor leido segun

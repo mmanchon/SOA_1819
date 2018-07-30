@@ -57,9 +57,15 @@
  * MAXIMUM ARGUMENT NUMBER
  * */
 #define MAX_NUM_LIST 1
-
-
 #define NO_OFF 0
+
+#define UINT8 uint8_t
+#define UINT16 uint16_t
+#define UINT32 uint32_t
+
+
+/********************* EXT4 ************************/
+
 
 typedef struct {
     //Inodes Info
@@ -86,23 +92,6 @@ typedef struct {
 
 }VolumenExt4;
 
-typedef struct {
-    char systemName[8];
-    uint16_t sectorSize;
-    uint8_t sectorsPerCluster;
-    uint16_t reservedSectors;
-    uint8_t numberFat;
-    uint16_t numberEntries;
-    uint32_t sectorsPerFat;
-    uint32_t rootCluster;
-    char label[12];
-}VolumenFat32;
-
-typedef struct {
-    VolumenExt4 ext4;
-    VolumenFat32 fat32;
-}FileSystem;
-
 //Cuando hemos llegado al directory entrie entonces leemos directamente este typedef
 typedef struct __attribute__((packed)){
     uint32_t inode;
@@ -127,5 +116,26 @@ typedef struct{
     uint32_t incompat;
     uint16_t desc_size;
 }DeepSearchExt4;
+
+/********************* FAT32 ************************/
+
+
+typedef struct __attribute__((packed)){
+    char systemName[8];
+    UINT16 sectorSize;
+    UINT8 sectorsPerCluster;
+    UINT16 reservedSectors;
+    UINT8 numberFat;
+    UINT16 numberEntries;
+}SubFAT32;
+
+typedef struct {
+    SubFAT32 subFAT32;
+    UINT32 sectorsPerFat;
+    UINT32 rootCluster;
+    char label[12];
+}VolumenFat32;
+
+
 
 #endif //RAGNAROK_TYPES_H

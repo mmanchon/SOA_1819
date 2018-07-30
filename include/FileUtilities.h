@@ -10,13 +10,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <linux/kernel.h>
 
 //includes propios
-#include "types.h"
+#include "Types.h"
 #include "Ext4.h"
 #include "Fat32.h"
 
+#define DEBUG 1 /* Constante usada para debugar */
 
 /**
  * Funcion para mirar si existe el fichero y el FS es valido
