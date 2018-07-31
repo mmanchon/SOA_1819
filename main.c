@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
             }else{
                 if(strcmp(argv[1], "-search") == 0){
-
+                    searchFileFS(argv[2],argv[3]);
                 }else if(strcmp(argv[1], "-show") == 0){
 
                 }

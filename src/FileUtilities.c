@@ -74,6 +74,9 @@ void searchFileFS(char *volume, char *file){
     uint64_t fileInode;
     DeepSearchExt4 ext4;
     struct tm *time;
+    VolumeIdInfo volumeIdInfo;
+    FATBasic fatBasic;
+    UINT32 lba_adrr;
 
     switch(checkFileSystem(volume)){
         case 1:
@@ -90,7 +93,14 @@ void searchFileFS(char *volume, char *file){
             break;
         case 2:
 
+            volumeIdInfo = getBasicInfoVolumeId();
+            fatBasic = calculateBasicFormulas(volumeIdInfo);
 
+            lba_adrr = fatBasic.cluster_begin_lba +
+                    ((fatBasic.root_dir_first_cluster) * fatBasic.sectors_per_cluster);
+
+
+            searchFileInFAT32(fatBasic,lba_adrr);
             break;
         default:
             printf(NOT_FOUND);

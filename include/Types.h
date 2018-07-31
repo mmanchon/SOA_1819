@@ -53,16 +53,28 @@
 #define BYTES_11 11
 #define BYTES_16 16
 
-/*
- * MAXIMUM ARGUMENT NUMBER
- * */
-#define MAX_NUM_LIST 1
-#define NO_OFF 0
+
+#define MAX_NUM_LIST 1 /* MAXIMUM ARGUMENT NUMBER*/
+#define NO_OFF 0 /* NO OFFSET FOR MOVING*/
 
 #define UINT8 uint8_t
 #define UINT16 uint16_t
 #define UINT32 uint32_t
+#define UINT64 uint64_t
 
+/*** DEBUG SECTION **/
+#define DEBUG
+
+#define PRINT8 "Variable %s: -%"PRIu8"-\n"
+#define PRINT16 "Variable %s: -%"PRIu16"-\n"
+#define PRINT32 "Variable %s: -%"PRIu32"-\n"
+#define PRINT64 "Variable %s: -%"PRIu64"-\n"
+
+#ifdef DEBUG
+#define DEBUG_PRINT(x) printf x
+#else
+#define DEBUG_PRINT(x) do {} while (0)
+#endif
 
 /********************* EXT4 ************************/
 
@@ -136,6 +148,31 @@ typedef struct {
     char label[12];
 }VolumenFat32;
 
+typedef struct {
+    UINT16 BPB_BytsPerSec;
+    UINT8 BPB_SecPerClus;
+    UINT16 BPB_RsvdSecCnt;
+    UINT8 BPB_NumFATs;
+    UINT32 BPB_FATSz32;
+    UINT32 BPB_RootClus;
+    UINT16 signature;
+}VolumeIdInfo;
 
+typedef struct{
+    UINT32 fat_begin_lba;
+    UINT32 cluster_begin_lba;
+    UINT8 sectors_per_cluster;
+    UINT32 root_dir_first_cluster;
+}FATBasic;
+
+
+typedef struct __attribute__((packed)){
+    char DIR_Name[8];
+    char DIR_Extension[3];
+    UINT8 DIR_Attr;
+    UINT16 DIR_FstClusHI;
+    UINT16 DIR_FstClusLO;
+    UINT32 DIR_FileSize;
+}FAT32Dir;
 
 #endif //RAGNAROK_TYPES_H

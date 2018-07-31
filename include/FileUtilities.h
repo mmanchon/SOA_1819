@@ -16,7 +16,6 @@
 #include "Ext4.h"
 #include "Fat32.h"
 
-#define DEBUG 1 /* Constante usada para debugar */
 
 /**
  * Funcion para mirar si existe el fichero y el FS es valido

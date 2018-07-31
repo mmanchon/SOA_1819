@@ -37,55 +37,21 @@
 #define BYTES_1_V2 100
 
 #define OFF_NAME_SYS 3
-#define OFF_SECTOR_FAT 0x24
+#define OFF_SECTORS_PER_FAT 0x24
 #define OFF_LABEL 0x47
 #define OFF_FAT_TYPE 0x52
 #define OFF_FAT_TYPE_2 0x36
-
+#define OFF_BYTES_PER_SEC 0x0B
 #define OFF_ROOT_DIR 0x2C
+#define OFF_SIGNATURE 0x1fe
 
+#define FAT32_SIZE 512
 #define LOW_ADDR_FC 0x1A //FIRST CLUSTER LOW
 #define HIGH_ADDR_FC 0x14 //FIRST CLUSTER HIGH
 
 int fd;
 
-typedef struct{
-    int year;
-    int month;
-    int day;
-    uint16_t  hex_date;
-}Date;
-typedef struct __attribute__((packed)){
-    int year;
-    int month;
-    int day;
-    uint16_t  hex_date;
-}Date1;
-
-typedef struct{
-    char name[12];
-    uint8_t attributes;
-    int isDir;
-    int isLfn;
-    char file_size[4];
-    char longname1[11];
-    char longname2[13];
-    char longname3[5];
-    uint32_t size;
-    Date date;
-}Dir_info;
-
-typedef struct{
-    uint64_t cluster_begin_lba;
-    uint64_t lba_adrr;
-    uint64_t max_lba_adrr;
-    uint32_t i_cluster;
-    uint32_t init_cluster;
-    char name[255];
-    char old[255];
-    Dir_info dir;
-}Lba_info;
-
+/********************************* FASE 1 *******************************/
 
 /**
  * Funcio unicament destinada a mostrar informació del FS.
@@ -105,6 +71,32 @@ VolumenFat32 getInfoFat32(VolumenFat32 fat32);
  * @return
  */
 void initSearchInfoFat32();
+
+/********************************* FASE 2 *******************************/
+
+
+/**
+ * Function in charge of looking for the basic information of the volume ID.
+ * This basic information is the bytes per sector, sectors per cluster,
+ * the number of reserved sectors, number of FATs, Sectors per FAT, root
+ * direcorty first cluster and the signature.
+ * This attributes will help us moving through all the file system.
+ * It's called when we detect the filesystem is FAT32 and we want to move throgh.
+ * Also used in other phases
+ * @return VolumeIdInfo is filled with all this attributes.
+ */
+VolumeIdInfo getBasicInfoVolumeId();
+
+
+FATBasic calculateBasicFormulas(VolumeIdInfo volumeIdInfo);
+
+
+int searchFileInFAT32(FATBasic fatBasic, UINT32 lba_adrr);
+
+
+
+
+/********************************* FAT32 UTILITIES *******************************/
 
 /**
  * Funció destinada a gestionar el moviment per el sistema de fitxers.
