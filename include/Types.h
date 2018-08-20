@@ -1,6 +1,9 @@
 #ifndef RAGNAROK_TYPES_H
 #define RAGNAROK_TYPES_H
 
+
+#include <stdint.h>
+
 /**
  * Constantes de Ext4
  * */

@@ -97,7 +97,8 @@ void searchFileFS(char *volume, char *file){
             fatBasic = calculateBasicFormulas(volumeIdInfo);
 
             lba_adrr = fatBasic.cluster_begin_lba +
-                    ((fatBasic.root_dir_first_cluster) * fatBasic.sectors_per_cluster);
+                        ((fatBasic.root_dir_first_cluster) *
+                        fatBasic.sectors_per_cluster);
 
 
             searchFileInFAT32(fatBasic,lba_adrr);

@@ -116,4 +116,6 @@ void moveThroughFat32(int whence,off_t offset,int bytes,int numArg, ...);
  */
 int checkIfFat32(int file);
 
+UINT32 FAT32Table(UINT32 actualCluster, FATBasic fatBasic);
+
 #endif
