@@ -111,7 +111,7 @@ int searchFileInFAT32(FATBasic fatBasic, UINT32 lba_adrr) {
     UINT32 nextCluster;
 
 
-    lseek(fd, (long) lba_adrr * FAT32_SIZE, SEEK_SET);
+    lseek(fd, (long) lba_adrr, SEEK_SET);
     read(fd, &fat32Dir, sizeof(fat32Dir));
 
     firstByte = fat32Dir.DIR_Name;
@@ -121,7 +121,7 @@ int searchFileInFAT32(FATBasic fatBasic, UINT32 lba_adrr) {
     DEBUG_PRINT(("SEARCH FILE IN FAT 32\n"));
     DEBUG_PRINT((PRINT32, "LBA_ADDR", lba_adrr));
     DEBUG_PRINT(("DIR_NAME: -%s-\n", fat32Dir.DIR_Name));
-    DEBUG_PRINT((PRINT8, "DIR_Name", *firstByte));
+    DEBUG_PRINT((PRINT8, "FIRST BYTE", *firstByte));
     DEBUG_PRINT(("DIR_EXTENSION: -%s-\n", fat32Dir.DIR_Extension));
     DEBUG_PRINT((PRINT8, "DIR_Attr", fat32Dir.DIR_Attr));
     DEBUG_PRINT((PRINT16, "DIR_FstClusHI", fat32Dir.DIR_FstClusHI));
@@ -136,18 +136,60 @@ int searchFileInFAT32(FATBasic fatBasic, UINT32 lba_adrr) {
         case 0x00:
             return 0;
         case 0x2e:
-            nextCluster = FAT32Table(fatBasic.root_dir_first_cluster, fatBasic);
-            searchFileInFAT32(fatBasic,nextCluster);
+            //nextCluster = FAT32Table(fatBasic.root_dir_first_cluster, fatBasic);
+            //searchFileInFAT32(fatBasic,nextCluster);
             break;
         default:
             break;
     }
 
+    switch(whatIsIt(fat32Dir)){
+        case 0:
+            break;
+        case 1:
+            printf("ES UN DIRECTORIO\n");
+            break;
+        case 2:
+            printf("ES UN ARCHIVO\n");
+            break;
+        case 3:
+            printf("ES VOLUME LABEL\n");
+            searchFileInFAT32(fatBasic,lba_adrr+0x20);
+
+            break;
+        case 4:
+            decodeLongName(lba_adrr);
+            printf("ES UN LONG NAME\n");
+            break;
+        default:
+            searchFileInFAT32(fatBasic,lba_adrr+0x20);
+            break;
+    }
+
+
+
     return 1;
 
 }
 
+int whatIsIt(FAT32Dir fat32Dir){
+    if((fat32Dir.DIR_Attr & 0x20) > 0) {
+        return 2;
+    }else if((fat32Dir.DIR_Attr & 0x10) > 0){
+        return 1;
+    }else if((fat32Dir.DIR_Attr & 0x0F) == 0x0F){
+        printf("ES MAYOR A CERO? %d\n",(fat32Dir.DIR_Attr & 0x0F));
+        return 4;
+    }else if((fat32Dir.DIR_Attr & 0x08) > 0){
+        return 3;
+    }
 
+    return 0;
+}
+
+void decodeLongName(UINT32 lba_addr){
+
+}
 /**********************************FAT32 UTILITIES **************************/
 
 void moveThroughFat32(int whence, off_t offset, int bytes, int numArg, ...) {
@@ -247,10 +289,10 @@ int checkIfFat32(int file) {
 UINT32 FAT32Table(UINT32 actualCluster, FATBasic fatBasic) {
     UINT32 nextCluster = 0;
 
-    lseek(fd, fatBasic.fat_begin_lba + (actualCluster * 32), SEEK_SET);
+//    lseek(fd, (long)(fatBasic.fat_begin_lba + ()), SEEK_SET);
     read(fd, &nextCluster, sizeof(nextCluster));
 
     return fatBasic.cluster_begin_lba +
-               (nextCluster * fatBasic.sectors_per_cluster);
+               (nextCluster*fatBasic.sectors_per_cluster);
 
 }

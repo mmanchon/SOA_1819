@@ -178,4 +178,9 @@ typedef struct __attribute__((packed)){
     UINT32 DIR_FileSize;
 }FAT32Dir;
 
+typedef struct __attribute__((packed)){
+    char seq_number;
+
+}
+
 #endif //RAGNAROK_TYPES_H

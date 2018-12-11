@@ -93,8 +93,9 @@ FATBasic calculateBasicFormulas(VolumeIdInfo volumeIdInfo);
 
 int searchFileInFAT32(FATBasic fatBasic, UINT32 lba_adrr);
 
+int whatIsIt(FAT32Dir fat32Dir);
 
-
+void decodeLongName(UINT32 lba_addr);
 
 /********************************* FAT32 UTILITIES *******************************/
 

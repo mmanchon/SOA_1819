@@ -15,7 +15,7 @@ int exisitsFile(char *path) {
     int fd;
 
     if ((fd = open(path, O_RDWR)) == -1) {
-        printf("Error en obrir el fitxer %s\n", path);
+        printf("Error en obrir el fitxer -%s-\n", path);
         exit(1);
 
     }
@@ -97,11 +97,11 @@ void searchFileFS(char *volume, char *file){
             fatBasic = calculateBasicFormulas(volumeIdInfo);
 
             lba_adrr = fatBasic.cluster_begin_lba +
-                        ((fatBasic.root_dir_first_cluster) *
+                        ((fatBasic.root_dir_first_cluster-2) *
                         fatBasic.sectors_per_cluster);
 
 
-            searchFileInFAT32(fatBasic,lba_adrr);
+            searchFileInFAT32(fatBasic,lba_adrr*FAT32_SIZE);
             break;
         default:
             printf(NOT_FOUND);
